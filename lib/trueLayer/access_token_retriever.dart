@@ -3,16 +3,20 @@ import 'package:bankr/model/access_token.dart';
 import 'package:bankr/util/http_poster.dart';
 
 class TLAccessTokenRetriever {
-  final String code;
+  final HttpPoster httpPoster;
 
-  TLAccessTokenRetriever(this.code);
+  TLAccessTokenRetriever(this.httpPoster);
 
-  Future<AccessToken> retrieve() async {
-    var json = await getJsonFromTL();
-    return accessTokenFromTLJson(json);
-  }
+  Future<AccessToken> retrieve(String code) async {
+    var map = new Map<String, dynamic>();
+    map["grant_type"] = "authorization_code";
+    map["client_id"] = Configuration.IDENTIFIER;
+    map["client_secret"] = Configuration.SECRET;
+    map["redirect_uri"] = Configuration.REDIRECT_URL;
+    map["code"] = code;
 
-  static AccessToken accessTokenFromTLJson(json) {
+    var json = await httpPoster.doPostAndGetJsonResponse(
+        Configuration.CREATE_POST_URL, map);
     String error = json['error'];
     if (error != null) {
       print("Error getting access token: $error");
@@ -28,17 +32,5 @@ class TLAccessTokenRetriever {
     var scope = json['scope'];
 
     return AccessToken(accessToken, expiresAt, tokenType, refreshToken, scope);
-  }
-
-  getJsonFromTL() async {
-    var map = new Map<String, dynamic>();
-    map["grant_type"] = "authorization_code";
-    map["client_id"] = Configuration.IDENTIFIER;
-    map["client_secret"] = Configuration.SECRET;
-    map["redirect_uri"] = Configuration.REDIRECT_URL;
-    map["code"] = code;
-
-    return await HttpPoster(Configuration.CREATE_POST_URL, map)
-        .doPostAndGetJsonResponse();
   }
 }

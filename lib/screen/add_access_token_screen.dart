@@ -1,7 +1,9 @@
 import 'package:bankr/Configuration.dart';
 import 'package:bankr/repository/access_token_memory_repository.dart';
 import 'package:bankr/trueLayer/access_token_retriever.dart';
+import 'package:bankr/util/http_poster.dart';
 import 'package:flutter/material.dart';
+import 'package:http/io_client.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SAddAccessToken extends StatefulWidget {
@@ -40,8 +42,9 @@ class _SAddAccessTokenState extends State<SAddAccessToken> {
   }
 
   addAccessToken(String code) async {
-    var tlAccessTokenRetriever = new TLAccessTokenRetriever(code);
-    var accessToken = await tlAccessTokenRetriever.retrieve();
+    var tlAccessTokenRetriever = new TLAccessTokenRetriever(
+        new HttpPoster(new IOClient()));
+    var accessToken = await tlAccessTokenRetriever.retrieve(code);
     AccessTokenMemoryRepository.getInstance().insert(accessToken);
   }
 

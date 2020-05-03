@@ -1,23 +1,23 @@
 import 'dart:convert';
+
 import 'package:http/http.dart';
 
 //TODO - replace with Dio?
 
 class HttpPoster {
-  final String _url;
-  final Map<String, dynamic> _body;
+  final Client _client;
 
-  HttpPoster(this._url, this._body);
+  HttpPoster(this._client);
 
-  doPostAndGetJsonResponse() {
-    return post(_url, body: _body).then((Response response) {
-      final int statusCode = response.statusCode;
+  doPostAndGetJsonResponse(String url, Map<String, dynamic> body) async {
+    final response = await _client.post(url, body: body);
 
-      if (statusCode < 200 || statusCode > 400) {
-        throw new Exception("Error while fetching data");
-      }
-
+    if (response.statusCode == 200) {
+      // If the call to the server was successful, parse the JSON.
       return json.decode(response.body);
-    });
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('Failed to load post');
+    }
   }
 }
