@@ -2,7 +2,11 @@ import 'package:bankr/Configuration.dart';
 import 'package:bankr/model/access_token.dart';
 import 'package:bankr/util/http_poster.dart';
 
-class TLAccessTokenRetriever {
+abstract class TLAccessTokenRetrieverI {
+  Future<AccessToken> retrieve(String code);
+}
+
+class TLAccessTokenRetriever extends TLAccessTokenRetrieverI {
   final HttpPoster httpPoster;
 
   TLAccessTokenRetriever(this.httpPoster);
@@ -32,5 +36,12 @@ class TLAccessTokenRetriever {
     var scope = json['scope'];
 
     return AccessToken(accessToken, expiresAt, tokenType, refreshToken, scope);
+  }
+}
+
+class TLAccessTokenRetrieverMock extends TLAccessTokenRetrieverI {
+  Future<AccessToken> retrieve(String code) async {
+    return AccessToken(
+        code, DateTime.now(), "tokenType", "refreshToken", "scope");
   }
 }

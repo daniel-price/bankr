@@ -5,10 +5,6 @@ import 'package:bankr/repository/access_token_repositoryI.dart';
 
 
 class AccessTokenMemoryRepository extends AccessTokenRepositoryI {
-  //TODO- replace singleton with dependency injection
-  static final AccessTokenMemoryRepository _instance =
-      new AccessTokenMemoryRepository();
-
   final HashMap<int, AccessToken> accessTokens = new HashMap(); //TODO - persist
 
   @override
@@ -16,6 +12,7 @@ class AccessTokenMemoryRepository extends AccessTokenRepositoryI {
     var nextKey = getNextKey();
     accessToken.key = nextKey;
     accessTokens[nextKey] = accessToken;
+    notifyListeners();
   }
 
   @override
@@ -47,9 +44,5 @@ class AccessTokenMemoryRepository extends AccessTokenRepositoryI {
       }
     }
     return largestKey;
-  }
-
-  static getInstance() {
-    return _instance;
   }
 }

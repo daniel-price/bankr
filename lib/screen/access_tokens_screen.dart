@@ -1,8 +1,9 @@
 import 'package:bankr/model/access_token.dart';
-import 'package:bankr/repository/access_token_memory_repository.dart';
+import 'package:bankr/repository/access_token_repositoryI.dart';
 import 'package:bankr/screen/add_access_token_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SAccessTokens extends StatefulWidget {
   @override
@@ -57,7 +58,7 @@ class _SAccessTokensState extends State<SAccessTokens> {
   }
 
   _getAllAccessTokens() async {
-    return await AccessTokenMemoryRepository.getInstance().getAccessTokens();
+    return await Provider.of<AccessTokenRepositoryI>(context).getAccessTokens();
   }
 
   _addAccessToken() {
