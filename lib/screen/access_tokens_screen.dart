@@ -13,6 +13,7 @@ class SAccessTokens extends StatefulWidget {
 class _SAccessTokensState extends State<SAccessTokens> {
   @override
   Widget build(BuildContext context) {
+    var accessTokenRepositoryI = Provider.of<AccessTokenRepositoryI>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Accounts'),
@@ -25,9 +26,10 @@ class _SAccessTokensState extends State<SAccessTokens> {
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
               return ListView.builder(
-                itemCount: snapshot.data.length,
+                itemCount: snapshot.data.length as int,
                 itemBuilder: (BuildContext context, int position) {
-                  AccessToken accessToken = snapshot.data[position];
+                  AccessToken accessToken = snapshot
+                      .data[position] as AccessToken;
                   return Card(
                     color: Colors.white,
                     elevation: 2.0,
@@ -36,7 +38,9 @@ class _SAccessTokensState extends State<SAccessTokens> {
                         accessToken.expiresAtStr,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      subtitle: Text(accessToken.key.toString()),
+                      subtitle: Text(accessToken.id.toString()),
+                      onTap: ()
+                      => accessTokenRepositoryI.delete(accessToken),
                     ),
                   );
                 },
@@ -57,14 +61,19 @@ class _SAccessTokensState extends State<SAccessTokens> {
     );
   }
 
-  _getAllAccessTokens() async {
-    return await Provider.of<AccessTokenRepositoryI>(context).getAccessTokens();
+  Future<List<AccessToken>> _getAllAccessTokens ()
+  {
+    AccessTokenRepositoryI accessTokenRepositoryI = Provider.of<
+        AccessTokenRepositoryI>(context);
+    return accessTokenRepositoryI.getAccessTokens();
   }
 
-  _addAccessToken() {
-    Navigator.push(
+  void _addAccessToken ()
+  {
+    Navigator.push<dynamic>(
       context,
-      MaterialPageRoute(builder: (context) => SAddAccessToken()),
+      MaterialPageRoute<dynamic>(builder: (context)
+      => SAddAccessToken()),
     );
   }
 }

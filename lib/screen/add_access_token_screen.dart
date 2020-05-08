@@ -41,6 +41,13 @@ class _SAddAccessTokenState extends State<SAddAccessToken> {
                 Navigator.pop(context);
               },
               child: Text('Submit'),
+            ),
+            RaisedButton(
+              onPressed: ()
+              async {
+                accessTokenRepositoryI.delete(null);
+              },
+              child: Text('Test Button'),
             )
           ],
         ),

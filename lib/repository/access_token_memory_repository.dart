@@ -3,26 +3,26 @@ import 'dart:collection';
 import 'package:bankr/model/access_token.dart';
 import 'package:bankr/repository/access_token_repositoryI.dart';
 
-
 class AccessTokenMemoryRepository extends AccessTokenRepositoryI {
-  final HashMap<int, AccessToken> accessTokens = new HashMap(); //TODO - persist
+  final HashMap<int, AccessToken> accessTokens = HashMap();
 
   @override
-  insert(AccessToken accessToken) {
+  void insert (AccessToken accessToken)
+  {
     var nextKey = getNextKey();
-    accessToken.key = nextKey;
+    accessToken.id = nextKey;
     accessTokens[nextKey] = accessToken;
-    notifyListeners();
   }
 
   @override
-  update(AccessToken accessToken) {
-    accessTokens[accessToken.key] = accessToken;
+  void update (AccessToken accessToken)
+  {
+    accessTokens[accessToken.id] = accessToken;
   }
 
   @override
   delete(AccessToken accessToken) {
-    accessTokens.remove(accessToken.key);
+    accessTokens.remove(accessToken.id);
   }
 
   @override

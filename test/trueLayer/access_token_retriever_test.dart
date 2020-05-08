@@ -7,7 +7,8 @@ import 'package:test/test.dart';
 
 class MockClient extends Mock implements Client {}
 
-main() {
+void main ()
+{
   final client = MockClient();
   var httpPoster = HttpPoster(client);
   var tlAccessTokenRetriever = TLAccessTokenRetriever(httpPoster);

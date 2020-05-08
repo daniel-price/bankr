@@ -9,7 +9,8 @@ class HttpPoster {
 
   HttpPoster(this._client);
 
-  doPostAndGetJsonResponse(String url, Map<String, dynamic> body) async {
+  dynamic doPostAndGetJsonResponse (String url, Map<String, dynamic> body)
+  async {
     final response = await _client.post(url, body: body);
 
     if (response.statusCode == 200) {

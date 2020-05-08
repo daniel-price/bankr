@@ -23,6 +23,9 @@ dependencies:
   url_launcher: ^5.4.5
   http: ^0.12.0
   provider: ^4.0.5+1
+  sembast: ^2.4.3
+  path_provider: ^0.5.0+1
+
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -34,6 +37,7 @@ dev_dependencies:
     sdk: flutter
   test: ^1.14.3
   mockito: ^4.1.1
+  build_runner: any
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -1,5 +1,5 @@
 class AccessToken {
-  int key;
+  int id;
   final String _accessToken;
   final DateTime _expiresAt;
   final String _tokenType;
@@ -7,7 +7,7 @@ class AccessToken {
   final String _scope;
 
   AccessToken(this._accessToken, this._expiresAt, this._tokenType,
-      this._refreshToken, this._scope);
+      this._refreshToken, this._scope, [this.id]);
 
   String get accessToken => _accessToken;
   DateTime get expiresAt => _expiresAt;
