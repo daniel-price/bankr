@@ -1,5 +1,5 @@
 import 'package:bankr/providers_factory.dart';
-import 'package:bankr/screen/access_tokens_screen.dart';
+import 'package:bankr/screen/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,8 +20,10 @@ class MyApp extends StatelessWidget {
 		    theme: ThemeData(
 			    primarySwatch: Colors.blueGrey,
 		    ),
-		    home: SAccessTokens(),
-	    ),
+        home: HomeScreen(),
+      ),
     );
   }
 }
+
+

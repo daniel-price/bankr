@@ -1,5 +1,5 @@
-import 'package:bankr/model/access_token.dart';
-import 'package:bankr/repository/access_token_json_converter.dart';
+import 'package:bankr/json/model_json_converters.dart';
+import 'package:bankr/model/access_token_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -14,8 +14,7 @@ void main() {
       _accessToken, _expiresAt, _tokenType, _refreshToken, _scope, _id);
   group('toMap and fromMap', () {
     test('checks that the map from an accessToken matches the accessToken', () {
-      AccessTokenJsonConverter accessTokenJsonConverter =
-          AccessTokenJsonConverter();
+      AccessTokenModelJsonConverter accessTokenJsonConverter = AccessTokenModelJsonConverter();
       Map<String, dynamic> map = accessTokenJsonConverter.toMap(accessToken);
       AccessToken accessTokenFromMap = accessTokenJsonConverter.fromMap(map);
       expect(accessTokenFromMap.accessToken, _accessToken);
@@ -23,7 +22,7 @@ void main() {
       expect(accessTokenFromMap.tokenType, _tokenType);
       expect(accessTokenFromMap.refreshToken, _refreshToken);
       expect(accessTokenFromMap.scope, _scope);
-      expect(accessTokenFromMap.id, _id);
+	    expect(accessTokenFromMap.key, _id);
     });
   });
 }
