@@ -11,27 +11,33 @@ class Http {
 
   Future<Map<String, dynamic>> doPostAndGetJsonResponse(String url, Map<String, dynamic> body) async {
     final response = await _client.post(url, body: body);
-
-    if (response.statusCode == 200) {
-      // If the call to the server was successful, parse the JSON.
-      return json.decode(response.body) as Map<String, dynamic>;
-    } else {
-      // If that call was not successful, throw an error.
-      print(response.body);
-      throw Exception('Failed to load post');
-    }
+    return _getJsonFromResponse(response);
   }
 
   Future<Map<String, dynamic>> doGetAndGetJsonResponse(String url, Map<String, String> headers) async {
     final response = await _client.get(url, headers: headers);
+    return _getJsonFromResponse(response);
+  }
 
-    if (response.statusCode == 200) {
-      // If the call to the server was successful, parse the JSON.
-      return json.decode(response.body) as Map<String, dynamic>;
-    } else {
-      // If that call was not successful, throw an error.
-      print(response.body);
-      throw Exception('Failed to load post');
+  Future<Map<String, dynamic>> _getJsonFromResponse(Response response) async {
+    if (response.statusCode != 200) {
+      return null;
     }
+
+    var jsonMap = json.decode(response.body) as Map<String, dynamic>;
+    if (_containsError(jsonMap)) {
+      return null;
+    }
+
+    return jsonMap;
+  }
+
+  bool _containsError(Map<String, dynamic> jsonMap) {
+    String error = jsonMap['error'] as String;
+    if (error != null) {
+      print("Error retrieving json" + error);
+      return true;
+    }
+    return false;
   }
 }

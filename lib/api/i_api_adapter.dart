@@ -1,8 +1,8 @@
-import 'package:bankr/model/account.dart';
-import 'package:bankr/model/account_transaction.dart';
+import 'package:bankr/data/model/account.dart';
+import 'package:bankr/data/model/account_transaction.dart';
 
 abstract class IApiAdapter {
-  Future<List<Account>> retrieveAccounts(String accessToken, int accessTokenId);
+  Future<List<Account>> retrieveAccounts(int keyAccessToken);
 
-  Future<List<AccountTransaction>> retrieveTransactions(String accessToken, Account account);
+  Future<List<AccountTransaction>> retrieveTransactions(int keyAccessToken, Account account);
 }

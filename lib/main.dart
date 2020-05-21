@@ -1,13 +1,12 @@
-import 'package:bankr/providers_factory.dart';
+import 'package:bankr/config/providers_factory.dart';
 import 'package:bankr/screen/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-void main ()
-async {
-	WidgetsFlutterBinding.ensureInitialized(); //need this to
-	await ProvidersFactory.initialize();
-	runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await ProvidersFactory.initialize();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -25,5 +24,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-

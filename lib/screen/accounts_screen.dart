@@ -1,6 +1,5 @@
-import 'package:bankr/data_downloader.dart';
-import 'package:bankr/model/account.dart';
-import 'package:bankr/repository/i_dao.dart';
+import 'package:bankr/data/model/account.dart';
+import 'package:bankr/screen/accounts_screen_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +12,7 @@ class AccountsScreen extends StatefulWidget {
 class _AccountsScreenState extends State<AccountsScreen> {
   @override
   Widget build(BuildContext context) {
-	  DataDownloader dataHandler = Provider.of<DataDownloader>(context);
+    AccountsScreenController controller = Provider.of<AccountsScreenController>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Accounts'),
@@ -22,7 +21,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
         width: double.infinity,
         height: double.infinity,
         child: FutureBuilder(
-	        future: Provider.of<IDao<Account>>(context).getAll(),
+	        future: controller.getAllAccounts(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
               return ListView.builder(
@@ -54,13 +53,11 @@ class _AccountsScreenState extends State<AccountsScreen> {
       ),
       floatingActionButton: FloatingActionButton(
 	      onPressed: ()
-	      {
-		      try
+	      async {
+		      bool accessTokenAdded = await controller.addAccessToken();
+		      if (!accessTokenAdded)
 		      {
-			      dataHandler.addNewAccessToken();
-		      } catch (e)
-		      {
-			      final snackBar = SnackBar(content: Text(e.toString()));
+			      final snackBar = SnackBar(content: Text("Unable to authenticate"));
 			      Scaffold.of(context).showSnackBar(snackBar);
 		      }
 	      },

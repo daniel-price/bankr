@@ -11,7 +11,7 @@ class OAuthCodeGenerator {
     var queryParameters = Uri.parse(result).queryParameters;
     String error = queryParameters['error'];
     if (error != null) {
-      throw Exception(error);
+      return null;
     }
 
     return queryParameters['code'];

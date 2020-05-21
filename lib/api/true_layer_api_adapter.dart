@@ -1,22 +1,33 @@
 import 'dart:io';
 
 import 'package:bankr/api/i_api_adapter.dart';
-import 'package:bankr/model/account.dart';
-import 'package:bankr/model/account_transaction.dart';
+import 'package:bankr/auth/access_token_store.dart';
+import 'package:bankr/data/model/account.dart';
+import 'package:bankr/data/model/account_transaction.dart';
 import 'package:bankr/util/http.dart';
 
 class TrueLayerApiAdapter extends IApiAdapter {
-  final Http http;
+  final Http _http;
+  final AccessTokenStore _accessTokenStore;
 
-  TrueLayerApiAdapter(this.http);
+  TrueLayerApiAdapter(this._http, this._accessTokenStore);
 
   @override
-  Future<List<Account>> retrieveAccounts(String accessToken, int keyAccessToken) async {
-    List<Map<String, dynamic>> results = await _getResultsFromTL("https://api.truelayer.com/data/v1/accounts", {HttpHeaders.authorizationHeader: "Bearer " + accessToken});
+  Future<List<Account>> retrieveAccounts (int keyAccessToken)
+  async {
+    var results = await _doGet(
+      "https://api.truelayer.com/data/v1/accounts",
+      keyAccessToken,
+    );
+
+    if (results == null)
+    {
+      return null;
+    }
 
     List<Account> accounts = new List();
     for (int i = 0; i < results.length; i++) {
-      Map<String, dynamic> result = results[i];
+      Map<String, dynamic> result = results[i] as Map<String, dynamic>;
       Account account = _accountFromResult(result, keyAccessToken);
       accounts.add(account);
     }
@@ -25,16 +36,23 @@ class TrueLayerApiAdapter extends IApiAdapter {
   }
 
   @override
-  Future<List<AccountTransaction>> retrieveTransactions(String accessToken, Account account) async {
+  Future<List<AccountTransaction>> retrieveTransactions (int keyAccessToken, Account account)
+  async {
     String accountId = account.accountId;
-    List<Map<String, dynamic>> results = await _getResultsFromTL(
+
+    var results = await _doGet(
       "https://api.truelayer.com/data/v1/accounts/$accountId/transactions",
-      {HttpHeaders.authorizationHeader: "Bearer " + accessToken},
+      keyAccessToken,
     );
+
+    if (results == null)
+    {
+      return null;
+    }
 
     List<AccountTransaction> list = new List();
     for (int i = 0; i < results.length; i++) {
-      Map<String, dynamic> result = results[i];
+      Map<String, dynamic> result = results[i] as Map<String, dynamic>;
       AccountTransaction transaction = _accountTransactionFromResult(result, account.key);
       list.add(transaction);
     }
@@ -84,13 +102,21 @@ class TrueLayerApiAdapter extends IApiAdapter {
     return AccountTransaction(timestamp, description, transactionType, transactionCategory, amount, currency, transactionId, keyAccount);
   }
 
-  Future<List<Map<String, dynamic>>> _getResultsFromTL(String s, Map<String, String> map) async {
-    var response = await http.doGetAndGetJsonResponse(s, map);
-    String error = response['error'] as String;
-    if (error != null) {
-      throw Exception(error);
+  Future<List> _doGet (String url, int keyAccessToken)
+  async {
+    var token = await _accessTokenStore.getToken(keyAccessToken);
+    var response = await _http.doGetAndGetJsonResponse(
+      url,
+      {
+        HttpHeaders.authorizationHeader: "Bearer $token",
+      },
+    );
+
+    if (response == null)
+    {
+      return null;
     }
 
-    return response['results'] as List<Map<String, dynamic>>;
+    return response['results'] as List<dynamic>;
   }
 }

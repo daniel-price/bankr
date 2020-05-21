@@ -1,4 +1,4 @@
-import 'package:bankr/model/i_persist.dart';
+import 'package:bankr/data/model/i_persist.dart';
 
 class AccountTransaction extends IPersist {
   final String _timestamp;
@@ -26,7 +26,7 @@ class AccountTransaction extends IPersist {
 
   String get transactionId => _transactionId;
 
-  int get idAccount => _keyAccount;
+  int get keyAccount => _keyAccount;
 
   String get date => DateTime.parse(_timestamp).toString();
 

@@ -1,8 +1,9 @@
 import 'dart:convert';
 
 import 'package:bankr/api/true_layer_api_adapter.dart';
-import 'package:bankr/model/account.dart';
-import 'package:bankr/model/account_transaction.dart';
+import 'package:bankr/auth/access_token_store.dart';
+import 'package:bankr/data/model/account.dart';
+import 'package:bankr/data/model/account_transaction.dart';
 import 'package:bankr/util/http.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart' as flutterTest;
@@ -13,70 +14,80 @@ class MockHttp extends Mock implements Http {}
 
 class MockAccount extends Mock implements Account {}
 
+class MockAccessTokenStore extends Mock implements AccessTokenStore {}
+
 void main() {
   flutterTest.TestWidgetsFlutterBinding.ensureInitialized();
   var mockHttp = MockHttp();
-  TrueLayerApiAdapter trueLayerApiAdapter = TrueLayerApiAdapter(mockHttp);
+  var mockAccessTokenStore = MockAccessTokenStore();
+  TrueLayerApiAdapter trueLayerApiAdapter = TrueLayerApiAdapter(mockHttp, mockAccessTokenStore);
 
   group('retrieveAccounts', () {
-    test('return null if the api returns an error', () async {
+	  test('return some accounts if api returns valid json', ()
+	  async {
       when(
         mockHttp.doGetAndGetJsonResponse(any, any),
       ).thenAnswer(
-        (_) async => <String, String>{'error': 'error'},
+			      (_)
+	      async => jsonDecode(await rootBundle.loadString('assets/test/tl_account.json')) as Map<String, dynamic>,
       );
 
       expect(
-        await trueLayerApiAdapter.retrieveAccounts('access token', 1),
-        null,
+	      await trueLayerApiAdapter.retrieveAccounts(1),
+	      const TypeMatcher<List<Account>>(),
       );
     });
 
-    test('return some accounts if api returns valid json', () async {
+	  test('return null if the account call returns an error', ()
+	  async {
       when(
         mockHttp.doGetAndGetJsonResponse(any, any),
       ).thenAnswer(
-        (_) async => jsonDecode(await rootBundle.loadString('assets/test/tl_account.json')) as Map<String, dynamic>,
+			      (_)
+	      async => null,
       );
 
       expect(
-        await trueLayerApiAdapter.retrieveAccounts('access token', 1),
-        const TypeMatcher<List<Account>>(),
+	      await trueLayerApiAdapter.retrieveAccounts(1),
+	      null,
       );
     });
   });
 
   var mockAccount = MockAccount();
 
-  group('retrieveTransactions', () {
-    test('return null if the api returns an error', () async {
-      when(
-        mockHttp.doGetAndGetJsonResponse(any, any),
-      ).thenAnswer(
-        (_) async => <String, String>{'error': 'error'},
-      );
+  group('retrieveTransactions', ()
+  {
+	  test('return some transactions if api returns valid json', ()
+	  async {
+		  when(
+			  mockHttp.doGetAndGetJsonResponse(any, any),
+		  ).thenAnswer(
+					  (_)
+			  async => jsonDecode(await rootBundle.loadString('assets/test/tl_account_transaction.json')) as Map<String, dynamic>,
+		  );
 
-      when(mockAccount.accountId).thenReturn("123abc");
+		  when(mockAccount.accountId).thenReturn("123abc");
 
-      expect(
-        await trueLayerApiAdapter.retrieveTransactions('access token', mockAccount),
-        null,
-      );
-    });
+		  expect(
+			  await trueLayerApiAdapter.retrieveTransactions(1, mockAccount),
+			  const TypeMatcher<List<AccountTransaction>>(),
+		  );
+	  });
 
-    test('return some transactions if api returns valid json', () async {
-      when(
-        mockHttp.doGetAndGetJsonResponse(any, any),
-      ).thenAnswer(
-        (_) async => jsonDecode(await rootBundle.loadString('assets/test/tl_account_transaction.json')) as Map<String, dynamic>,
-      );
+	  test('returns null if the transaction call returns an error', ()
+	  async {
+		  when(
+			  mockHttp.doGetAndGetJsonResponse(any, any),
+		  ).thenAnswer(
+					  (_)
+			  async => null,
+		  );
 
-      when(mockAccount.accountId).thenReturn("123abc");
-
-      expect(
-        await trueLayerApiAdapter.retrieveTransactions('access token', mockAccount),
-        const TypeMatcher<List<AccountTransaction>>(),
-      );
-    });
+		  expect(
+			  await trueLayerApiAdapter.retrieveTransactions(1, mockAccount),
+			  null,
+		  );
+	  });
   });
 }

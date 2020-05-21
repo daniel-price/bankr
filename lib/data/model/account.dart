@@ -1,5 +1,4 @@
-import 'package:bankr/model/i_persist.dart';
-import 'package:flutter/widgets.dart';
+import 'package:bankr/data/model/i_persist.dart';
 
 class Account extends IPersist {
   final String _updateTimestamp;
@@ -46,11 +45,6 @@ class Account extends IPersist {
   String get logoUri => _logoUri;
 
   int get keyAccessToken => _keyAccessToken;
-
-  String get getLastRefreshed => "Refreshed 54 mins ago"; //todo
-  String get getBalance => "£1000";
-
-  Image get logoImage => Image.asset('assets/images/providers/monzo.png'); //todo
 
   @override
   bool operator ==(dynamic other) {

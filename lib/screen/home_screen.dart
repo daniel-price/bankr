@@ -10,7 +10,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
-  final List<Widget> _children = [AccountsScreen(), TransactionsScreen(), AccountsScreen()];
+  final List<Widget> _children = [AccountsScreen(), TransactionsScreen()];
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: new Icon(Icons.mail),
             title: new Text('Transactions'),
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), title: Text('Profile'))
         ],
       ),
     );

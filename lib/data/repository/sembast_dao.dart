@@ -1,6 +1,6 @@
-import 'package:bankr/json/i_json_converter.dart';
-import 'package:bankr/model/i_persist.dart';
-import 'package:bankr/repository/i_dao.dart';
+import 'package:bankr/data/json/i_json_converter.dart';
+import 'package:bankr/data/model/i_persist.dart';
+import 'package:bankr/data/repository/i_dao.dart';
 import 'package:sembast/sembast.dart';
 
 class SembastDao<E extends IPersist> extends IDao<E> {

@@ -1,9 +1,9 @@
-class OAuthJsonGenerator {
+class OAuthRequestGenerator {
   final String _identifier;
   final String _secret;
   final String _redirectUrl;
 
-  OAuthJsonGenerator(this._identifier, this._secret, this._redirectUrl);
+  OAuthRequestGenerator(this._identifier, this._secret, this._redirectUrl);
 
   Map<String, String> generateAuthorizationJson(String code) {
     return {

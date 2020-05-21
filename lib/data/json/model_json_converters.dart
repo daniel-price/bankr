@@ -1,27 +1,8 @@
-import 'package:bankr/json/i_json_converter.dart';
-import 'package:bankr/model/access_token_model.dart';
-import 'package:bankr/model/account.dart';
-import 'package:bankr/model/account_transaction.dart';
+import 'package:bankr/data/json/i_json_converter.dart';
+import 'package:bankr/data/model/account.dart';
+import 'package:bankr/data/model/account_transaction.dart';
 
-class AccessTokenModelJsonConverter extends IJsonConverter<AccessToken> {
-  AccessToken fromMap(Map<String, dynamic> map) {
-    return AccessToken(map['accessToken'] as String, DateTime.fromMillisecondsSinceEpoch(map['expiresAt'] as int), map['tokenType'] as String, map['refreshToken'] as String, map['scope'] as String,
-        map['id'] as int);
-  }
-
-  Map<String, dynamic> toMap(AccessToken accessToken) {
-    return <String, dynamic>{
-      'id': accessToken.key,
-      'accessToken': accessToken.accessToken,
-      'expiresAt': accessToken.expiresAt.millisecondsSinceEpoch,
-      'tokenType': accessToken.tokenType,
-      'refreshToken': accessToken.refreshToken,
-      'scope': accessToken.scope,
-    };
-  }
-}
-
-class AccountModelJsonConverter extends IJsonConverter<Account> {
+class AccountJsonConverter extends IJsonConverter<Account> {
   Account fromMap(Map<String, dynamic> map) {
     return Account(
       map['updateTimestamp'] as String,
@@ -61,7 +42,7 @@ class AccountModelJsonConverter extends IJsonConverter<Account> {
   }
 }
 
-class AccountTransactionModelJsonConverter extends IJsonConverter<AccountTransaction> {
+class AccountTransactionJsonConverter extends IJsonConverter<AccountTransaction> {
   AccountTransaction fromMap(Map<String, dynamic> map) {
     return AccountTransaction(
       map['timestamp'] as String,
@@ -85,7 +66,7 @@ class AccountTransactionModelJsonConverter extends IJsonConverter<AccountTransac
       'amount': transaction.amount,
       'currency': transaction.currency,
       'transactionId': transaction.transactionId,
-      'idAccount': transaction.idAccount,
+      'idAccount': transaction.keyAccount,
       'id': transaction.key,
     };
   }
