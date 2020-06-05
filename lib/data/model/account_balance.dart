@@ -11,21 +11,14 @@ class AccountBalance extends IPersist {
   AccountBalance(this._currency, this._available, this._current, this._overdraft, this._updateTimestamp, this._uuidAccount, [String uuid]) : super(uuid);
 
   String get currency => _currency;
-
   double get available => _available;
-
   double get current => _current;
-
   double get overdraft => _overdraft;
-
   String get updateTimestamp => _updateTimestamp;
-
   String get uuidAccount => _uuidAccount;
 
   DateTime get updated => DateTime.parse(updateTimestamp);
 
   @override
-  bool sameAs(IPersist existing) {
-    return false;
-  }
+  ApiReferenceData get apiReferenceData => null;
 }

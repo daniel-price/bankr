@@ -46,8 +46,6 @@ class AccountTransaction extends IPersist {
   => _merchantName;
 
   @override
-  bool sameAs (IPersist other)
-  {
-    return other is AccountTransaction && other._transactionId == _transactionId;
-  }
+  ApiReferenceData get apiReferenceData
+  => ApiReferenceData('transactionId', transactionId);
 }

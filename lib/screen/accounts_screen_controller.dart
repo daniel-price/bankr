@@ -1,8 +1,6 @@
 import 'package:bankr/api/true_layer_api_adapter.dart';
 import 'package:bankr/auth/access_token_store.dart';
 import 'package:bankr/data/download/download_mediator.dart';
-import 'package:bankr/data/download/download_parameters.dart';
-import 'package:bankr/data/download/downloaded_data.dart';
 import 'package:bankr/data/model/account.dart';
 import 'package:bankr/data/model/account_balance.dart';
 import 'package:bankr/data/repository/i_dao.dart';
@@ -39,8 +37,7 @@ class AccountsScreenController {
     if (keyAccessToken == null) {
       return false;
     }
-    var downloadedData = DownloadedData();
-    return _downloadMediator.download(DownloadParameters(keyAccessToken, true), downloadedData);
+    return await _downloadMediator.downloadAllData(keyAccessToken);
   }
 
   Future<bool> updateAllAccounts ()
@@ -48,18 +45,15 @@ class AccountsScreenController {
     bool allUpdated = true;
     var accounts = await _accountDao.getAll();
 
-    HashMapList<String, Account> accountsByUuidAccessToken = new HashMapList<String, Account>();
+    HashMapList<AccountProvider, Account> accountsByProvider = new HashMapList<AccountProvider, Account>();
     for (Account account in accounts)
     {
-      accountsByUuidAccessToken.add(account.uuidAccessToken, account);
+      var accountProvider = await _accountProviderDao.get(account.uuidProvider);
+      accountsByProvider.add(accountProvider, account);
     }
 
-    await accountsByUuidAccessToken.forEach((uuidAccessToken, accounts)
-    async {
-      var downloadParameters = DownloadParameters(uuidAccessToken, false);
-      var downloadedData = DownloadedData();
-      downloadedData.accounts = accounts;
-      var downloaded = await _downloadMediator.download(downloadParameters, downloadedData);
+    await accountsByProvider.forEach((accountProvider, accounts) async {
+      var downloaded = await _downloadMediator.update(accountProvider, accounts);
       allUpdated = allUpdated && downloaded;
     });
 

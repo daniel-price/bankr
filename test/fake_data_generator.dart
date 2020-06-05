@@ -3,7 +3,19 @@ import 'package:bankr/data/model/account_balance.dart';
 import 'package:bankr/data/model/account_transaction.dart';
 
 Account generateFakeAccount(String accountId) {
-  return Account("updateTimestamp", accountId, "accountType", "name", "currency", "iban", "swiftBic", "number", "sortCode", 'uuid2', 'uuid2', 'uuid3');
+  return Account(
+    "updateTimestamp",
+    accountId,
+    "accountType",
+    "name",
+    "currency",
+    "iban",
+    "swiftBic",
+    "number",
+    "sortCode",
+    'uuid2',
+    'uuid3',
+  );
 }
 
 AccountTransaction generateFakeAccountTransaction(String transactionId) {

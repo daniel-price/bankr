@@ -10,11 +10,9 @@ class Account extends IPersist {
   final String _swiftBic;
   final String _number;
   final String _sortCode;
-  final String _uuidAccessToken;
   final String _uuidProvider;
 
-  Account(this._updateTimestamp, this._accountId, this._accountType, this._name, this._currency, this._iban, this._swiftBic, this._number, this._sortCode, this._uuidAccessToken, this._uuidProvider,
-      [String uuid])
+  Account(this._updateTimestamp, this._accountId, this._accountType, this._name, this._currency, this._iban, this._swiftBic, this._number, this._sortCode, this._uuidProvider, [String uuid])
       : super(uuid);
 
   String get updateTimestamp => _updateTimestamp;
@@ -35,15 +33,10 @@ class Account extends IPersist {
 
   String get sortCode => _sortCode;
 
-  String get uuidAccessToken
-  => _uuidAccessToken;
-
-  Object get uuidProvider
+  String get uuidProvider
   => _uuidProvider;
 
   @override
-  bool sameAs (IPersist other)
-  {
-	  return other is Account && other.accountId == _accountId;
-  }
+  ApiReferenceData get apiReferenceData
+  => ApiReferenceData('accountId', accountId);
 }

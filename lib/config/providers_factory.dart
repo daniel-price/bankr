@@ -8,9 +8,6 @@ import 'package:bankr/auth/oauth/o_auth_request_generator.dart';
 import 'package:bankr/auth/repository/access_token_repository_secure_storage.dart';
 import 'package:bankr/auth/repository/i_access_token_repository.dart';
 import 'package:bankr/config/configuration.dart';
-import 'package:bankr/data/download/abstract_data_handler.dart';
-import 'package:bankr/data/download/data_retrievers.dart';
-import 'package:bankr/data/download/data_savers.dart';
 import 'package:bankr/data/download/download_mediator.dart';
 import 'package:bankr/data/json/model_json_converters.dart';
 import 'package:bankr/data/model/account.dart';
@@ -68,27 +65,10 @@ class ProvidersFactory {
 
     IApiAdapter apiInterfaceI = TrueLayerApiAdapter(http, accessTokenStore);
 
-    var accountTransactionsSaver = AccountTransactionsSaver(accountTransactionRepository);
-    var accountBalancesSaver = AccountBalancesSaver(accountBalanceRepository);
-    var accountsSaver = AccountsSaver(accountRepository);
-    var accountProviderSaver = AccountProviderSaver(accountProviderRepository);
+    DataRetriever dataRetriever = DataRetriever(apiInterfaceI);
+    DataSaver dataSaver = DataSaver(accountProviderRepository, accountRepository, accountBalanceRepository, accountTransactionRepository);
 
-    var transactionsRetriever = TransactionsRetriever(apiInterfaceI);
-    var balancesRetriever = BalancesRetriever(apiInterfaceI);
-    var accountsRetriever = AccountsRetriever(apiInterfaceI);
-    var providerRetriever = ProviderRetriever(apiInterfaceI);
-
-    var dataHandlers = List<AbstractDataHandler>();
-    dataHandlers.add(providerRetriever);
-    dataHandlers.add(accountsRetriever);
-    dataHandlers.add(balancesRetriever);
-    dataHandlers.add(transactionsRetriever);
-    dataHandlers.add(accountProviderSaver);
-    dataHandlers.add(accountsSaver);
-    dataHandlers.add(accountBalancesSaver);
-    dataHandlers.add(accountTransactionsSaver);
-
-    var downloadMediator = DownloadMediator(dataHandlers);
+    var downloadMediator = DownloadMediator(dataRetriever, dataSaver);
 
     var accountsScreenController = AccountsScreenController(accountRepository, accessTokenStore, downloadMediator, accountBalanceRepository, accountProviderRepository);
     var transactionsScreenController = TransactionsScreenController(accountTransactionRepository, accountRepository);

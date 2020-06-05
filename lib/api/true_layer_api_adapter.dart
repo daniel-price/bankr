@@ -23,15 +23,14 @@ class TrueLayerApiAdapter extends IApiAdapter {
       uuidAccessToken,
     );
 
-    if (results == null)
-    {
+    if (results == null) {
       return null;
     }
 
     List<Account> accounts = new List();
     for (int i = 0; i < results.length; i++) {
       Map<String, dynamic> result = results[i] as Map<String, dynamic>;
-      Account account = _accountFromResult(result, uuidAccessToken, uuidProvider);
+      Account account = _accountFromResult(result, uuidProvider);
       accounts.add(account);
     }
 
@@ -66,7 +65,7 @@ class TrueLayerApiAdapter extends IApiAdapter {
     return list;
   }
 
-  Account _accountFromResult (Map<String, dynamic> map, String uuidAccessToken, String uuidProvider)
+  Account _accountFromResult (Map<String, dynamic> map, String uuidProvider)
   {
     String updateTimestamp = map['update_timestamp'] as String;
     String accountId = map['account_id'] as String;
@@ -98,7 +97,6 @@ class TrueLayerApiAdapter extends IApiAdapter {
         swiftBic,
         number,
         sortCode,
-        uuidAccessToken,
         uuidProvider);
   }
 
@@ -190,7 +188,7 @@ class TrueLayerApiAdapter extends IApiAdapter {
   }
 
   @override
-  Future<AccountProvider> retrieveProvider (String uuidAccessToken)
+  Future<AccountProvider> retrieveAccountProvider (String uuidAccessToken)
   async {
     var results = await _doGet(
       "https://api.truelayer.com/data/v1/me",
@@ -209,10 +207,10 @@ class TrueLayerApiAdapter extends IApiAdapter {
     }
 
     Map<String, dynamic> result = results[0] as Map<String, dynamic>;
-    return _accountProviderFromResult(result);
+    return _accountProviderFromResult(result, uuidAccessToken);
   }
 
-  AccountProvider _accountProviderFromResult (Map<String, dynamic> map)
+  AccountProvider _accountProviderFromResult (Map<String, dynamic> map, String uuidAccessToken)
   {
     var provider = map['provider'] as Map<String, dynamic>;
     var displayName = provider['display_name'] as String;
@@ -225,15 +223,16 @@ class TrueLayerApiAdapter extends IApiAdapter {
     var canRequestAllDataAtAnyTime = accountProvider?.canRequestAllDataAtAnyTime ?? false;
     var logoSvg = accountProvider?.logoSvg ?? '';
 
-
     return AccountProvider(
-        displayName,
-        logoUri,
-        providerId,
-        dataAccessSavingsDays,
-        dataCardsDays,
-        canRequestAllDataAtAnyTime,
-        logoSvg);
+      displayName,
+      logoUri,
+      providerId,
+      dataAccessSavingsDays,
+      dataCardsDays,
+      canRequestAllDataAtAnyTime,
+      logoSvg,
+      uuidAccessToken,
+    );
   }
 }
 
@@ -246,8 +245,11 @@ class AccountProvider extends IPersist
   final int _dataCardsDays;
   final bool _canRequestAllDataAtAnyTime;
   final String _logoSvg;
+  final String _uuidAccessToken;
 
-  AccountProvider (this._displayName, this._logoUri, this._providerId, this._dataAccessSavingsDays, this._dataCardsDays, this._canRequestAllDataAtAnyTime, this._logoSvg, [String uuid]) : super(uuid);
+  AccountProvider (this._displayName, this._logoUri, this._providerId, this._dataAccessSavingsDays, this._dataCardsDays, this._canRequestAllDataAtAnyTime, this._logoSvg, this._uuidAccessToken,
+      [String uuid])
+      : super(uuid);
 
   String get displayName
   => _displayName;
@@ -270,11 +272,12 @@ class AccountProvider extends IPersist
   String get logoSvg
   => _logoSvg;
 
+  String get uuidAccessToken
+  => _uuidAccessToken;
+
   @override
-  bool sameAs (IPersist other)
-  {
-    return other is AccountProvider && other.providerId == providerId;
-  }
+  ApiReferenceData get apiReferenceData
+  => ApiReferenceData('providerId', providerId);
 }
 
 class DateRange

@@ -28,9 +28,29 @@ class SembastDao<E extends IPersist> extends IDao<E> {
     );
 
     return recordSnapshots.map((snapshot) {
-	    final saveableI = _jsonConverter.fromMap(snapshot.value);
-      return saveableI;
+      return getEntityFromSnapshot(snapshot);
     }).toList();
+  }
+
+  E getEntityFromSnapshot(RecordSnapshot<String, Map<String, dynamic>> snapshot) {
+    return _jsonConverter.fromMap(snapshot.value);
+  }
+
+  @override
+  Future<E> get(String uuid) async {
+    var filter = Filter.equals('uuid', uuid);
+    return await getEntityForFilter(filter);
+  }
+
+  Future<E> getEntityForFilter(Filter filter) async {
+    RecordSnapshot<String, Map<String, dynamic>> recordSnapshot = await getSnapshotForFilter(filter);
+    return getEntityFromSnapshot(recordSnapshot);
+  }
+
+  Future<RecordSnapshot<String, Map<String, dynamic>>> getSnapshotForFilter(Filter filter) async {
+    var finder = Finder(filter: filter);
+    var recordSnapshot = await _store.findFirst(_db, finder: finder);
+    return recordSnapshot;
   }
 
   @override
@@ -38,6 +58,7 @@ class SembastDao<E extends IPersist> extends IDao<E> {
 	  var record = _store.record(saveableI.uuid);
 	  await record.put(_db, _jsonConverter.toMap(saveableI));
   }
+
 
   @override
   update(E saveableI) async {
@@ -47,5 +68,25 @@ class SembastDao<E extends IPersist> extends IDao<E> {
       _jsonConverter.toMap(saveableI),
       finder: finder,
     );
+  }
+
+  @override
+  void insertIfNew (E saveableI)
+  async {
+    if (await isNew(saveableI.apiReferenceData))
+    {
+      await insert(saveableI);
+    }
+  }
+
+  Future<bool> isNew (ApiReferenceData apiReferenceData)
+  async {
+    if (apiReferenceData == null)
+    {
+      return true;
+    }
+
+    var filter = Filter.equals(apiReferenceData.name, apiReferenceData.data);
+    return await getSnapshotForFilter(filter) == null;
   }
 }

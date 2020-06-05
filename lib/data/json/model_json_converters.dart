@@ -16,7 +16,6 @@ class AccountJsonConverter extends IJsonConverter<Account> {
       map['swiftBic'] as String,
       map['number'] as String,
       map['sortCode'] as String,
-      map['uuidAccessToken'] as String,
       map['uuidProvider'] as String,
       map['uuid'] as String,
     );
@@ -33,7 +32,6 @@ class AccountJsonConverter extends IJsonConverter<Account> {
       'swiftBic': account.swiftBic,
       'number': account.number,
       'sortCode': account.sortCode,
-      'uuidAccessToken': account.uuidAccessToken,
       'uuidProvider': account.uuidProvider,
       'uuid': account.uuid,
     };
@@ -110,6 +108,7 @@ class AccountProviderJsonConverter extends IJsonConverter<AccountProvider>
       map['dataCardsDays'] as int,
       map['canRequestAllDataAtAnyTime'] as bool,
       map['logoSvg'] as String,
+      map['uuidAccessToken'] as String,
       map['uuid'] as String,
     );
   }
@@ -124,6 +123,7 @@ class AccountProviderJsonConverter extends IJsonConverter<AccountProvider>
       'dataCardsDays': provider.dataCardsDays,
       'canRequestAllDataAtAnyTime': provider.canRequestAllDataAtAnyTime,
       'logoSvg': provider.logoSvg,
+      'uuidAccessToken': provider.uuidAccessToken,
       'uuid': provider.uuid,
     };
   }

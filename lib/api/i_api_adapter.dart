@@ -10,5 +10,5 @@ abstract class IApiAdapter {
 
   Future<AccountBalance> retrieveBalance(String uuidAccessToken, Account account);
 
-  Future<AccountProvider> retrieveProvider(String uuidAccessToken);
+  Future<AccountProvider> retrieveAccountProvider(String uuidAccessToken);
 }

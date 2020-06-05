@@ -1,5 +1,4 @@
 import 'package:bankr/api/i_api_adapter.dart';
-import 'package:bankr/data/data_saver.dart';
 import 'package:bankr/data/download/download_mediator.dart';
 import 'package:bankr/data/model/account.dart';
 import 'package:bankr/data/model/account_transaction.dart';
@@ -31,7 +30,6 @@ void main() {
     test("return true if data received and saved", () async {
       var mockDataSaver = MockDataSaver();
       var mockApiAdapter = MockApiAdapter();
-      var dataDownloader = DownloadMediator(List());
       //TODO - add retrievers and savers
       var accounts = generateFakeAccounts("fakeAccounts");
       var accountTransactions = generateFakeAccountTransactions("fakeAccountTransactions");

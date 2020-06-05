@@ -20,7 +20,6 @@ void main() {
       expect(originalAccount.swiftBic, finalAccount.swiftBic);
       expect(originalAccount.number, finalAccount.number);
       expect(originalAccount.sortCode, finalAccount.sortCode);
-      expect(originalAccount.uuidAccessToken, finalAccount.uuidAccessToken);
       expect(originalAccount.uuidProvider, finalAccount.uuidProvider);
 
       expect(originalAccount.uuid, finalAccount.uuid);
