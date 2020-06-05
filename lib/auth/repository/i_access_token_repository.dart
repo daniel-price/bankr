@@ -9,5 +9,5 @@ abstract class IAccessTokenRepository {
 
   Future<List<AccessToken>> getAll();
 
-  Future<AccessToken> get(int keyAccessToken);
+  Future<AccessToken> get(String uuidAccessToken);
 }

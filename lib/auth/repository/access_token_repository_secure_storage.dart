@@ -3,23 +3,22 @@ import 'dart:convert';
 import 'package:bankr/auth/access_token.dart';
 import 'package:bankr/auth/repository/i_access_token_repository.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AccessTokenRepositorySecureStorage extends IAccessTokenRepository {
   final FlutterSecureStorage _storage;
-  final SharedPreferences _sharedPreferences;
 
-  AccessTokenRepositorySecureStorage(this._storage, this._sharedPreferences);
+  AccessTokenRepositorySecureStorage(this._storage);
 
   @override
   void delete(AccessToken accessToken) async {
-    await _storage.delete(key: accessToken.key.toString());
+	  await _storage.delete(key: accessToken.uuid);
   }
 
   @override
-  Future<AccessToken> get(int keyAccessToken) async {
-    var accessTokenString = await _storage.read(key: keyAccessToken.toString());
-    return _readAccessToken(keyAccessToken.toString(), accessTokenString);
+  Future<AccessToken> get (String uuidAccessToken)
+  async {
+	  var accessTokenString = await _storage.read(key: uuidAccessToken);
+	  return _readAccessToken(uuidAccessToken, accessTokenString);
   }
 
   @override
@@ -37,30 +36,24 @@ class AccessTokenRepositorySecureStorage extends IAccessTokenRepository {
 
   @override
   void insert(AccessToken accessToken) async {
-    accessToken.key = await _generateKey();
-    await _writeAccessToken(accessToken, accessToken.key);
+	  await _writeAccessToken(accessToken, accessToken.uuid);
   }
 
   @override
   void update(AccessToken accessToken) async {
     await delete(accessToken);
-    await _writeAccessToken(accessToken, accessToken.key);
+    await _writeAccessToken(accessToken, accessToken.uuid);
   }
 
-  Future<int> _generateKey() async {
-    int nextKey = (_sharedPreferences.getInt('LastKey') ?? 0) + 1;
-    await _sharedPreferences.setInt('LastKey', nextKey);
-    return nextKey;
-  }
-
-  void _writeAccessToken(AccessToken accessToken, int key) async {
+  void _writeAccessToken (AccessToken accessToken, String uuid)
+  async {
     String value = _toPersistString(accessToken);
-    await _storage.write(key: key.toString(), value: value);
+    await _storage.write(key: uuid, value: value);
   }
 
-  AccessToken _readAccessToken(String key, String value) {
+  AccessToken _readAccessToken (String uuid, String value)
+  {
     AccessToken accessToken = _fromPersistString(value);
-    accessToken.key = int.parse(key);
     return accessToken;
   }
 
@@ -72,13 +65,13 @@ class AccessTokenRepositorySecureStorage extends IAccessTokenRepository {
       map['tokenType'] as String,
       map['refreshToken'] as String,
       map['scope'] as String,
-      map['id'] as int,
+	    map['uuid'] as String,
     );
   }
 
   String _toPersistString(AccessToken accessToken) {
     var map = <String, dynamic>{
-      'id': accessToken.key,
+	    'uuid': accessToken.uuid,
       'accessToken': accessToken.accessToken,
       'expiresAt': accessToken.expiresAt.millisecondsSinceEpoch,
       'tokenType': accessToken.tokenType,

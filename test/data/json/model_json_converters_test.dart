@@ -20,11 +20,10 @@ void main() {
       expect(originalAccount.swiftBic, finalAccount.swiftBic);
       expect(originalAccount.number, finalAccount.number);
       expect(originalAccount.sortCode, finalAccount.sortCode);
-      expect(originalAccount.providerName, finalAccount.providerName);
-      expect(originalAccount.providerId, finalAccount.providerId);
-      expect(originalAccount.logoUri, finalAccount.logoUri);
-      expect(originalAccount.keyAccessToken, finalAccount.keyAccessToken);
-      expect(originalAccount.key, finalAccount.key);
+      expect(originalAccount.uuidAccessToken, finalAccount.uuidAccessToken);
+      expect(originalAccount.uuidProvider, finalAccount.uuidProvider);
+
+      expect(originalAccount.uuid, finalAccount.uuid);
     });
   });
 
@@ -42,8 +41,26 @@ void main() {
       expect(originalAccountTransaction.amount, finalAccountTransaction.amount);
       expect(originalAccountTransaction.currency, finalAccountTransaction.currency);
       expect(originalAccountTransaction.transactionId, finalAccountTransaction.transactionId);
-      expect(originalAccountTransaction.keyAccount, finalAccountTransaction.keyAccount);
-      expect(originalAccountTransaction.key, finalAccountTransaction.key);
+      expect(originalAccountTransaction.merchantName, finalAccountTransaction.merchantName);
+      expect(originalAccountTransaction.uuidAccount, finalAccountTransaction.uuidAccount);
+      expect(originalAccountTransaction.uuid, finalAccountTransaction.uuid);
+    });
+  });
+
+  group("accountBalanceJsonConverter", () {
+    test("doing toMap and fromMap gives the original balance", () {
+      var originalAccountBalance = generateFakeAccountBalance();
+      var balanceJsonConverter = AccountBalanceJsonConverter();
+      var map = balanceJsonConverter.toMap(originalAccountBalance);
+      var finalAccountBalance = balanceJsonConverter.fromMap(map);
+
+      expect(originalAccountBalance.currency, finalAccountBalance.currency);
+      expect(originalAccountBalance.available, finalAccountBalance.available);
+      expect(originalAccountBalance.current, finalAccountBalance.current);
+      expect(originalAccountBalance.overdraft, finalAccountBalance.overdraft);
+      expect(originalAccountBalance.updateTimestamp, finalAccountBalance.updateTimestamp);
+      expect(originalAccountBalance.uuidAccount, finalAccountBalance.uuidAccount);
+      expect(originalAccountBalance.uuid, finalAccountBalance.uuid);
     });
   });
 }

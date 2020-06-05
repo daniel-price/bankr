@@ -8,10 +8,13 @@ import 'package:bankr/auth/oauth/o_auth_request_generator.dart';
 import 'package:bankr/auth/repository/access_token_repository_secure_storage.dart';
 import 'package:bankr/auth/repository/i_access_token_repository.dart';
 import 'package:bankr/config/configuration.dart';
-import 'package:bankr/data/data_downloader.dart';
-import 'package:bankr/data/data_saver.dart';
+import 'package:bankr/data/download/abstract_data_handler.dart';
+import 'package:bankr/data/download/data_retrievers.dart';
+import 'package:bankr/data/download/data_savers.dart';
+import 'package:bankr/data/download/download_mediator.dart';
 import 'package:bankr/data/json/model_json_converters.dart';
 import 'package:bankr/data/model/account.dart';
+import 'package:bankr/data/model/account_balance.dart';
 import 'package:bankr/data/model/account_transaction.dart';
 import 'package:bankr/data/repository/i_dao.dart';
 import 'package:bankr/data/repository/sembast_dao.dart';
@@ -26,7 +29,6 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ProvidersFactory {
   static List<SingleChildWidget> providers;
@@ -37,8 +39,7 @@ class ProvidersFactory {
     final database = await databaseFactoryIo.openDatabase(dbPath);
 
     var flutterSecureStorage = new FlutterSecureStorage();
-    var sharedPreferences = await SharedPreferences.getInstance();
-    final IAccessTokenRepository accessTokenRepositoryI = AccessTokenRepositorySecureStorage(flutterSecureStorage, sharedPreferences);
+    final IAccessTokenRepository accessTokenRepositoryI = AccessTokenRepositorySecureStorage(flutterSecureStorage);
 
     var ioClient = new IOClient();
     var http = new Http(ioClient);
@@ -51,22 +52,46 @@ class ProvidersFactory {
 
     final OAuthAuthenticator oAuthAuthenticatorI = OAuthAuthenticator(oAuthAccessTokenRetriever, oAuthCodeGenerator, oAuthJsonGenerator);
 
-    var accountStore = intMapStoreFactory.store('account');
+    var accountStore = stringMapStoreFactory.store('account');
     IDao<Account> accountRepository = SembastDao(accountStore, database, AccountJsonConverter());
 
-    var transactionStore = intMapStoreFactory.store('transaction');
+    var accountBalanceStore = stringMapStoreFactory.store('accountBalance');
+    IDao<AccountBalance> accountBalanceRepository = SembastDao(accountBalanceStore, database, AccountBalanceJsonConverter());
+
+    var transactionStore = stringMapStoreFactory.store('transaction');
     IDao<AccountTransaction> accountTransactionRepository = SembastDao(transactionStore, database, AccountTransactionJsonConverter());
+
+    var providerStore = stringMapStoreFactory.store('provider');
+    IDao<AccountProvider> accountProviderRepository = SembastDao(providerStore, database, AccountProviderJsonConverter());
 
     var accessTokenStore = AccessTokenStore(oAuthAuthenticatorI, accessTokenRepositoryI);
 
     IApiAdapter apiInterfaceI = TrueLayerApiAdapter(http, accessTokenStore);
 
-    var dataSaver = DataSaver(accountRepository, accountTransactionRepository);
+    var accountTransactionsSaver = AccountTransactionsSaver(accountTransactionRepository);
+    var accountBalancesSaver = AccountBalancesSaver(accountBalanceRepository);
+    var accountsSaver = AccountsSaver(accountRepository);
+    var accountProviderSaver = AccountProviderSaver(accountProviderRepository);
 
-    DataDownloader dataHandler = DataDownloader(apiInterfaceI, dataSaver);
+    var transactionsRetriever = TransactionsRetriever(apiInterfaceI);
+    var balancesRetriever = BalancesRetriever(apiInterfaceI);
+    var accountsRetriever = AccountsRetriever(apiInterfaceI);
+    var providerRetriever = ProviderRetriever(apiInterfaceI);
 
-    var accountsScreenController = AccountsScreenController(accountRepository, accessTokenStore, dataHandler);
-    var transactionsScreenController = TransactionsScreenController(accountTransactionRepository);
+    var dataHandlers = List<AbstractDataHandler>();
+    dataHandlers.add(providerRetriever);
+    dataHandlers.add(accountsRetriever);
+    dataHandlers.add(balancesRetriever);
+    dataHandlers.add(transactionsRetriever);
+    dataHandlers.add(accountProviderSaver);
+    dataHandlers.add(accountsSaver);
+    dataHandlers.add(accountBalancesSaver);
+    dataHandlers.add(accountTransactionsSaver);
+
+    var downloadMediator = DownloadMediator(dataHandlers);
+
+    var accountsScreenController = AccountsScreenController(accountRepository, accessTokenStore, downloadMediator, accountBalanceRepository, accountProviderRepository);
+    var transactionsScreenController = TransactionsScreenController(accountTransactionRepository, accountRepository);
 
     providers = [
 	    Provider<AccountsScreenController>(create: (context)

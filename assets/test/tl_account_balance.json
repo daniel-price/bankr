@@ -1,0 +1,11 @@
+{
+  "results": [
+    {
+      "currency": "GBP",
+      "available": 1161.2,
+      "current": 1161.2,
+      "overdraft": 1000,
+      "update_timestamp": "2017-02-07T17:33:30.001222Z"
+    }
+  ]
+}

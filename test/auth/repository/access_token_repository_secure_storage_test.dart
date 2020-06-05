@@ -41,8 +41,7 @@ class MockSharedPreferences extends Mock implements SharedPreferences {
 
 void main() {
   var mockStorage = MockStorage();
-  var mockSharedPreferences = MockSharedPreferences();
-  var accessTokenRepositorySecureStorage = AccessTokenRepositorySecureStorage(mockStorage, mockSharedPreferences);
+  var accessTokenRepositorySecureStorage = AccessTokenRepositorySecureStorage(mockStorage);
 
   group('insert, update, getAll, delete', () {
     test('return an access token if the retrieve access token call returns valid json', () async {
@@ -66,14 +65,15 @@ void main() {
       var accessTokens = await accessTokenRepositorySecureStorage.getAll();
 
       for (AccessToken accessToken in accessTokens) {
-        if (accessToken.key == firstAccessToken.key) {
+        if (accessToken.uuid == firstAccessToken.uuid) {
           expect(accessToken.accessToken, accessToken1);
           expect(accessToken.expiresAt, expiresAt1);
           expect(accessToken.tokenType, tokenType1);
           expect(accessToken.refreshToken, refreshToken1);
           expect(accessToken.scope, scope1);
         }
-        if (accessToken.key == secondAccessToken.key) {
+	      if (accessToken.uuid == secondAccessToken.uuid)
+	      {
           expect(accessToken.accessToken, accessToken2);
           expect(accessToken.expiresAt, expiresAt2);
           expect(accessToken.tokenType, tokenType2);
@@ -87,7 +87,7 @@ void main() {
       String tokenType3 = 'tokenType3';
       String refreshToken3 = 'refreshToken3';
       String scope3 = 'scope3';
-      firstAccessToken = AccessToken(accessToken3, expiresAt3, tokenType3, refreshToken3, scope3, firstAccessToken.key);
+      firstAccessToken = AccessToken(accessToken3, expiresAt3, tokenType3, refreshToken3, scope3, firstAccessToken.uuid);
 
       await accessTokenRepositorySecureStorage.update(firstAccessToken);
       await accessTokenRepositorySecureStorage.delete(secondAccessToken);

@@ -1,5 +1,7 @@
+import 'package:bankr/api/true_layer_api_adapter.dart';
 import 'package:bankr/data/json/i_json_converter.dart';
 import 'package:bankr/data/model/account.dart';
+import 'package:bankr/data/model/account_balance.dart';
 import 'package:bankr/data/model/account_transaction.dart';
 
 class AccountJsonConverter extends IJsonConverter<Account> {
@@ -14,11 +16,9 @@ class AccountJsonConverter extends IJsonConverter<Account> {
       map['swiftBic'] as String,
       map['number'] as String,
       map['sortCode'] as String,
-      map['providerName'] as String,
-      map['providerId'] as String,
-      map['logoUri'] as String,
-      map['idAccessToken'] as int,
-      map['id'] as int,
+      map['uuidAccessToken'] as String,
+      map['uuidProvider'] as String,
+      map['uuid'] as String,
     );
   }
 
@@ -33,11 +33,35 @@ class AccountJsonConverter extends IJsonConverter<Account> {
       'swiftBic': account.swiftBic,
       'number': account.number,
       'sortCode': account.sortCode,
-      'providerName': account.providerName,
-      'providerId': account.providerId,
-      'logoUri': account.logoUri,
-      'idAccessToken': account.keyAccessToken,
-      'id': account.key,
+      'uuidAccessToken': account.uuidAccessToken,
+      'uuidProvider': account.uuidProvider,
+      'uuid': account.uuid,
+    };
+  }
+}
+
+class AccountBalanceJsonConverter extends IJsonConverter<AccountBalance> {
+  AccountBalance fromMap(Map<String, dynamic> map) {
+    return AccountBalance(
+      map['currency'] as String,
+      map['available'] as double,
+      map['current'] as double,
+      map['overdraft'] as double,
+      map['updateTimestamp'] as String,
+      map['uuidAccount'] as String,
+      map['uuid'] as String,
+    );
+  }
+
+  Map<String, dynamic> toMap(AccountBalance accountBalance) {
+    return <String, dynamic>{
+      'currency': accountBalance.currency,
+      'available': accountBalance.available,
+      'current': accountBalance.current,
+      'overdraft': accountBalance.overdraft,
+      'updateTimestamp': accountBalance.updateTimestamp,
+      'uuidAccount': accountBalance.uuidAccount,
+      'uuid': accountBalance.uuid,
     };
   }
 }
@@ -52,8 +76,9 @@ class AccountTransactionJsonConverter extends IJsonConverter<AccountTransaction>
       map['amount'] as double,
       map['currency'] as String,
       map['transactionId'] as String,
-      map['idAccount'] as int,
-      map['id'] as int,
+      map['merchantName'] as String,
+      map['uuidAccount'] as String,
+      map['uuid'] as String,
     );
   }
 
@@ -66,8 +91,40 @@ class AccountTransactionJsonConverter extends IJsonConverter<AccountTransaction>
       'amount': transaction.amount,
       'currency': transaction.currency,
       'transactionId': transaction.transactionId,
-      'idAccount': transaction.keyAccount,
-      'id': transaction.key,
+      'merchantName': transaction.merchantName,
+      'uuidAccount': transaction.uuidAccount,
+      'uuid': transaction.uuid,
+    };
+  }
+}
+
+class AccountProviderJsonConverter extends IJsonConverter<AccountProvider>
+{
+  AccountProvider fromMap (Map<String, dynamic> map)
+  {
+    return AccountProvider(
+      map['displayName'] as String,
+      map['logoUri'] as String,
+      map['providerId'] as String,
+      map['dataAccessSavingsDays'] as int,
+      map['dataCardsDays'] as int,
+      map['canRequestAllDataAtAnyTime'] as bool,
+      map['logoSvg'] as String,
+      map['uuid'] as String,
+    );
+  }
+
+  Map<String, dynamic> toMap (AccountProvider provider)
+  {
+    return <String, dynamic>{
+      'displayName': provider.displayName,
+      'logoUri': provider.logoUri,
+      'providerId': provider.providerId,
+      'dataAccessSavingsDays': provider.dataAccessSavingsDays,
+      'dataCardsDays': provider.dataCardsDays,
+      'canRequestAllDataAtAnyTime': provider.canRequestAllDataAtAnyTime,
+      'logoSvg': provider.logoSvg,
+      'uuid': provider.uuid,
     };
   }
 }

@@ -36,6 +36,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.4.1"
+  bloc:
+    dependency: "direct main"
+    description:
+      name: bloc
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -188,6 +195,20 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_bloc:
+    dependency: "direct main"
+    description:
+      name: flutter_bloc
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.0"
+  flutter_plugin_android_lifecycle:
+    dependency: transitive
+    description:
+      name: flutter_plugin_android_lifecycle
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.8"
   flutter_secure_storage:
     dependency: "direct main"
     description:
@@ -195,6 +216,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.3.3"
+  flutter_svg:
+    dependency: "direct main"
+    description:
+      name: flutter_svg
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.17.4"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -261,6 +289,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.12"
+  intl:
+    dependency: "direct main"
+    description:
+      name: intl
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.16.1"
   io:
     dependency: transitive
     description:
@@ -282,6 +317,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
+  local_auth:
+    dependency: "direct main"
+    description:
+      name: local_auth
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.2+3"
   logging:
     dependency: transitive
     description:
@@ -366,6 +408,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.6.4"
+  path_drawing:
+    dependency: transitive
+    description:
+      name: path_drawing
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.1"
+  path_parsing:
+    dependency: transitive
+    description:
+      name: path_parsing
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.4"
   path_provider:
     dependency: "direct main"
     description:
@@ -387,6 +443,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.4.0"
+  platform:
+    dependency: transitive
+    description:
+      name: platform
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.1"
   plugin_platform_interface:
     dependency: transitive
     description:
@@ -623,6 +686,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.1+4"
+  uuid:
+    dependency: "direct main"
+    description:
+      name: uuid
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.4"
   vector_math:
     dependency: transitive
     description:

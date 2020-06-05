@@ -1,5 +1,6 @@
 import 'package:bankr/data/data_saver.dart';
 import 'package:bankr/data/model/account.dart';
+import 'package:bankr/data/model/account_balance.dart';
 import 'package:bankr/data/model/account_transaction.dart';
 import 'package:bankr/data/model/i_persist.dart';
 import 'package:bankr/data/repository/i_dao.dart';
@@ -23,7 +24,8 @@ class MockDao<E extends IPersist> extends Mock implements IDao<E> {
 void main() {
   var accountDao = MockDao<Account>();
   var accountTransactionDao = MockDao<AccountTransaction>();
-  var dataSaver = DataSaver(accountDao, accountTransactionDao);
+  var accountBalanceDao = MockDao<AccountBalance>();
+  var dataSaver = DataSaver(accountDao, accountTransactionDao, accountBalanceDao);
 
   group("saveAccounts", () {
     test(

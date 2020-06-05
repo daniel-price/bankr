@@ -8,13 +8,13 @@ class AccessTokenStore {
 
   AccessTokenStore(this._oAuthAuthenticator, this._accessTokenRepository);
 
-  Future<int> addAccessToken() async {
+  Future<String> addAccessToken() async {
     AccessToken accessToken = await _oAuthAuthenticator.authenticate();
     if (accessToken == null) {
       return null;
     }
     await _accessTokenRepository.insert(accessToken);
-    return accessToken.key;
+    return accessToken.uuid;
   }
 
   Future<AccessToken> _ensureRefreshed(AccessToken accessToken) async {
@@ -24,16 +24,27 @@ class AccessTokenStore {
     }
 
     var refreshedAccessToken = await _oAuthAuthenticator.refresh(accessToken.refreshToken);
-    refreshedAccessToken.key = accessToken.key;
+    refreshedAccessToken.uuid = accessToken.uuid;
 
-    await _accessTokenRepository.update(accessToken);
+    await _accessTokenRepository.update(refreshedAccessToken);
     return refreshedAccessToken;
   }
 
-  Future<String> getToken (int keyAccessToken)
+  Future<String> getToken (String uuidAccessToken)
   async {
-    AccessToken accessToken = await _accessTokenRepository.get(keyAccessToken);
+    AccessToken accessToken = await _accessTokenRepository.get(uuidAccessToken);
     await _ensureRefreshed(accessToken);
     return accessToken.accessToken;
+  }
+
+  Future<List<String>> getAllKeys ()
+  async {
+    List<AccessToken> accessTokens = await _accessTokenRepository.getAll();
+    List<String> uuidAccessTokens = List();
+    for (AccessToken accessToken in accessTokens)
+    {
+      uuidAccessTokens.add(accessToken.uuid);
+    }
+    return uuidAccessTokens;
   }
 }

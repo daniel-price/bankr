@@ -8,16 +8,16 @@ import 'package:mockito/mockito.dart';
 class MockOAuthAuthenticator extends Mock implements OAuthAuthenticator {}
 
 class MockAccessTokenRepository extends Mock implements IAccessTokenRepository {
-  Map<int, AccessToken> accessTokens = Map();
+  Map<String, AccessToken> accessTokens = Map();
 
   @override
   void insert(AccessToken accessToken) {
-    accessTokens[accessToken.key] = accessToken;
+	  accessTokens[accessToken.uuid] = accessToken;
   }
 
   @override
   void update(AccessToken accessToken) {
-    accessTokens[accessToken.key] = accessToken;
+	  accessTokens[accessToken.uuid] = accessToken;
   }
 
   @override
@@ -61,7 +61,7 @@ void main() {
     test(
       "gets all access tokens, one expired which needs refreshed and one not expired",
       () async {
-        var accessToken1 = AccessToken('a', DateTime.now(), 'c', 'd', 'e', 1);
+		    var accessToken1 = AccessToken('a', DateTime.now(), 'c', 'd', 'e', 'uuid');
         var accessToken2 = AccessToken('f', DateTime.now().add(Duration(hours: 2)), 'g', 'h', 'i');
         var accessToken3 = AccessToken('a', DateTime.now().add(Duration(hours: 3)), 'c', 'd', 'e');
 
@@ -74,14 +74,16 @@ void main() {
 
         var repoAccessTokens = await mockAccessTokenRepository.getAll();
         for (AccessToken accessToken in repoAccessTokens) {
-          if (accessToken.key == accessToken1) {
+	        if (accessToken.uuid == accessToken1)
+	        {
             expect(accessToken.accessToken, accessToken3.accessToken);
             expect(accessToken.expiresAt, accessToken3.expiresAt);
             expect(accessToken.scope, accessToken3.scope);
             expect(accessToken.refreshToken, accessToken3.refreshToken);
             expect(accessToken.tokenType, accessToken3.tokenType);
           }
-          if (accessToken.key == accessToken2) {
+	        if (accessToken.uuid == accessToken2)
+	        {
             expect(accessToken.accessToken, accessToken2.accessToken);
             expect(accessToken.expiresAt, accessToken2.expiresAt);
             expect(accessToken.scope, accessToken2.scope);

@@ -8,9 +8,12 @@ class AccountTransaction extends IPersist {
   final double _amount;
   final String _currency;
   final String _transactionId;
-  final int _keyAccount;
+  final String _merchantName;
+  final String _uuidAccount;
 
-  AccountTransaction(this._timestamp, this._description, this._transactionType, this._transactionCategory, this._amount, this._currency, this._transactionId, this._keyAccount, [int id]) : super(id);
+  AccountTransaction(this._timestamp, this._description, this._transactionType, this._transactionCategory, this._amount, this._currency, this._transactionId, this._merchantName, this._uuidAccount,
+      [String uuid])
+      : super(uuid);
 
   String get timestamp => _timestamp;
 
@@ -26,12 +29,25 @@ class AccountTransaction extends IPersist {
 
   String get transactionId => _transactionId;
 
-  int get keyAccount => _keyAccount;
+  String get uuidAccount
+  => _uuidAccount;
 
-  String get date => DateTime.parse(_timestamp).toString();
+  DateTime get dateTime
+  {
+	  return DateTime.parse(_timestamp);
+  }
+
+  DateTime get date
+  {
+	  return DateTime(dateTime.year, dateTime.month, dateTime.day);
+  }
+
+  String get merchantName
+  => _merchantName;
 
   @override
-  bool operator ==(dynamic other) {
+  bool sameAs (IPersist other)
+  {
     return other is AccountTransaction && other._transactionId == _transactionId;
   }
 }

@@ -10,15 +10,12 @@ class Account extends IPersist {
   final String _swiftBic;
   final String _number;
   final String _sortCode;
-  final String _providerName;
-  final String _providerId;
-  final String _logoUri;
-  final int _keyAccessToken;
+  final String _uuidAccessToken;
+  final String _uuidProvider;
 
-  Account(this._updateTimestamp, this._accountId, this._accountType, this._name, this._currency, this._iban, this._swiftBic, this._number, this._sortCode, this._providerName, this._providerId,
-      this._logoUri, this._keyAccessToken,
-      [int id])
-      : super(id);
+  Account(this._updateTimestamp, this._accountId, this._accountType, this._name, this._currency, this._iban, this._swiftBic, this._number, this._sortCode, this._uuidAccessToken, this._uuidProvider,
+      [String uuid])
+      : super(uuid);
 
   String get updateTimestamp => _updateTimestamp;
 
@@ -38,16 +35,15 @@ class Account extends IPersist {
 
   String get sortCode => _sortCode;
 
-  String get providerName => _providerName;
+  String get uuidAccessToken
+  => _uuidAccessToken;
 
-  String get providerId => _providerId;
-
-  String get logoUri => _logoUri;
-
-  int get keyAccessToken => _keyAccessToken;
+  Object get uuidProvider
+  => _uuidProvider;
 
   @override
-  bool operator ==(dynamic other) {
-    return other is Account && other._accountId == _accountId;
+  bool sameAs (IPersist other)
+  {
+	  return other is Account && other.accountId == _accountId;
   }
 }

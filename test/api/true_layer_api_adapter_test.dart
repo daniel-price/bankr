@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bankr/api/true_layer_api_adapter.dart';
 import 'package:bankr/auth/access_token_store.dart';
 import 'package:bankr/data/model/account.dart';
+import 'package:bankr/data/model/account_balance.dart';
 import 'package:bankr/data/model/account_transaction.dart';
 import 'package:bankr/util/http.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +22,7 @@ void main() {
   var mockHttp = MockHttp();
   var mockAccessTokenStore = MockAccessTokenStore();
   TrueLayerApiAdapter trueLayerApiAdapter = TrueLayerApiAdapter(mockHttp, mockAccessTokenStore);
+  var mockAccount = MockAccount();
 
   group('retrieveAccounts', () {
 	  test('return some accounts if api returns valid json', ()
@@ -33,8 +35,8 @@ void main() {
       );
 
       expect(
-	      await trueLayerApiAdapter.retrieveAccounts(1),
-	      const TypeMatcher<List<Account>>(),
+        await trueLayerApiAdapter.retrieveAccounts('abc', 'def'),
+        const TypeMatcher<List<Account>>(),
       );
     });
 
@@ -48,13 +50,44 @@ void main() {
       );
 
       expect(
-	      await trueLayerApiAdapter.retrieveAccounts(1),
+	      await trueLayerApiAdapter.retrieveAccounts('abc', 'def'),
 	      null,
       );
     });
   });
 
-  var mockAccount = MockAccount();
+  group('retrieveAccountBalance', ()
+  {
+	  test('return a balance if api returns valid json', ()
+	  async {
+		  when(
+			  mockHttp.doGetAndGetJsonResponse(any, any),
+		  ).thenAnswer(
+					  (_)
+			  async => jsonDecode(await rootBundle.loadString('assets/test/tl_account_balance.json')) as Map<String, dynamic>,
+		  );
+
+		  expect(
+			  await trueLayerApiAdapter.retrieveBalance('abc', mockAccount),
+			  const TypeMatcher<AccountBalance>(),
+		  );
+	  });
+
+	  test('return null if the balance call returns an error', ()
+	  async {
+		  when(
+			  mockHttp.doGetAndGetJsonResponse(any, any),
+		  ).thenAnswer(
+					  (_)
+			  async => null,
+		  );
+
+		  expect(
+			  await trueLayerApiAdapter.retrieveBalance('abc', mockAccount),
+			  null,
+		  );
+	  });
+  });
 
   group('retrieveTransactions', ()
   {
@@ -70,7 +103,7 @@ void main() {
 		  when(mockAccount.accountId).thenReturn("123abc");
 
 		  expect(
-			  await trueLayerApiAdapter.retrieveTransactions(1, mockAccount),
+			  await trueLayerApiAdapter.retrieveTransactions('abc', mockAccount),
 			  const TypeMatcher<List<AccountTransaction>>(),
 		  );
 	  });
@@ -85,7 +118,7 @@ void main() {
 		  );
 
 		  expect(
-			  await trueLayerApiAdapter.retrieveTransactions(1, mockAccount),
+			  await trueLayerApiAdapter.retrieveTransactions('abc', mockAccount),
 			  null,
 		  );
 	  });

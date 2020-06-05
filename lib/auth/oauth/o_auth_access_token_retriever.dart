@@ -19,7 +19,6 @@ class OAuthAccessTokenRetriever {
       return null;
     }
 
-    int key = json['key'] as int;
     String accessToken = json['access_token'] as String;
     int expiresIn = json['expires_in'] as int;
     Duration expiresInDuration = Duration(seconds: expiresIn);
@@ -28,6 +27,6 @@ class OAuthAccessTokenRetriever {
     String refreshToken = json['refresh_token'] as String;
     String scope = json['scope'] as String;
 
-    return AccessToken(accessToken, expiresAt, tokenType, refreshToken, scope, key);
+    return AccessToken(accessToken, expiresAt, tokenType, refreshToken, scope);
   }
 }

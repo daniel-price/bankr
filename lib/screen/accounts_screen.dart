@@ -1,4 +1,3 @@
-import 'package:bankr/data/model/account.dart';
 import 'package:bankr/screen/accounts_screen_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +9,11 @@ class AccountsScreen extends StatefulWidget {
 }
 
 class _AccountsScreenState extends State<AccountsScreen> {
+  AccountsScreenController controller;
+
   @override
   Widget build(BuildContext context) {
-    AccountsScreenController controller = Provider.of<AccountsScreenController>(context);
+    controller = Provider.of<AccountsScreenController>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Accounts'),
@@ -20,50 +21,81 @@ class _AccountsScreenState extends State<AccountsScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        child: FutureBuilder(
-	        future: controller.getAllAccounts(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.hasData) {
-              return ListView.builder(
-                itemCount: snapshot.data.length as int,
-                itemBuilder: (BuildContext context, int position) {
-	                Account account = snapshot.data[position] as Account;
-                  return Card(
-                    color: Colors.white,
-                    elevation: 2.0,
-                    child: ListTile(
-                      title: Text(
-	                      account.name,
-                        style: TextStyle(fontWeight: FontWeight.bold),
+        child: RefreshIndicator(
+          onRefresh: _refresh,
+          child: FutureBuilder(
+            future: controller.getAllAccounts(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData) {
+                return ListView.builder(
+                  itemCount: snapshot.data.length as int,
+                  itemBuilder: (BuildContext context, int position) {
+                    AccountRow accountRow = snapshot.data[position] as AccountRow;
+                    return Card(
+                      color: Colors.white,
+                      elevation: 2.0,
+                      child: ListTile(
+                        title: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Center(
+                                child: accountRow.getImage(),
+                              ),
+                              flex: 10,
+                            ),
+                            Expanded(
+                              child: Text(accountRow.accountName),
+                              flex: 50,
+                            ),
+                            Expanded(
+                              child: Text(accountRow.currentAccountBalance),
+                              flex: 20,
+                            ),
+                          ],
+                        ),
+                        //subtitle: Text(account.key.toString()),
+                        onTap: () {},
                       ),
-	                    subtitle: Text(account.key.toString()),
-	                    onTap: ()
-	                    {},
-                    ),
-                  );
-                },
-              );
-            } else {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-          },
+                    );
+                  },
+                );
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            },
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-	      onPressed: ()
-	      async {
-		      bool accessTokenAdded = await controller.addAccessToken();
-		      if (!accessTokenAdded)
-		      {
-			      final snackBar = SnackBar(content: Text("Unable to authenticate"));
-			      Scaffold.of(context).showSnackBar(snackBar);
-		      }
-	      },
-	      tooltip: 'Add accounts',
+        onPressed: ()
+        async {
+          bool accessTokenAdded = await controller.addAccessToken();
+          if (!accessTokenAdded && mounted)
+          {
+            final snackBar = SnackBar(content: Text("Unable to authenticate"));
+            Scaffold.of(context).showSnackBar(snackBar);
+          }
+        },
+        tooltip: 'Add accounts',
         child: Icon(Icons.add),
       ),
     );
+  }
+
+  Future<void> _refresh ()
+  async {
+    var allUpdated = await controller.updateAllAccounts();
+    if (mounted)
+    {
+      setState(()
+      {});
+      if (!allUpdated)
+      {
+        final snackBar = SnackBar(content: Text("Unable to refresh"));
+        Scaffold.of(context).showSnackBar(snackBar);
+      }
+    }
   }
 }

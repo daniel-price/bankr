@@ -1,14 +1,15 @@
 import 'package:bankr/config/configuration.dart';
+import 'package:uuid/uuid.dart';
 
 class AccessToken {
-  int key;
+  String uuid;
   final String _accessToken;
   final DateTime _expiresAt;
   final String _tokenType;
   final String _refreshToken;
   final String _scope;
 
-	AccessToken (this._accessToken, this._expiresAt, this._tokenType, this._refreshToken, this._scope, [int this.key]);
+	AccessToken (this._accessToken, this._expiresAt, this._tokenType, this._refreshToken, this._scope, [String uuid]) : this.uuid = uuid ?? Uuid().v4();
 
   String get accessToken => _accessToken;
 

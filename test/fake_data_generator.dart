@@ -1,12 +1,35 @@
 import 'package:bankr/data/model/account.dart';
+import 'package:bankr/data/model/account_balance.dart';
 import 'package:bankr/data/model/account_transaction.dart';
 
 Account generateFakeAccount(String accountId) {
-  return Account("updateTimestamp", accountId, "accountType", "name", "currency", "iban", "swiftBic", "number", "sortCode", "providerName", "providerId", "logoUri", 2, 3);
+  return Account("updateTimestamp", accountId, "accountType", "name", "currency", "iban", "swiftBic", "number", "sortCode", 'uuid2', 'uuid2', 'uuid3');
 }
 
 AccountTransaction generateFakeAccountTransaction(String transactionId) {
-  return AccountTransaction('timestamp', 'description', 'transactionType', 'transactionCategory', 100, 'currency', transactionId, 4, 3);
+	return AccountTransaction(
+			'timestamp',
+			'description',
+			'transactionType',
+			'transactionCategory',
+			100,
+			'currency',
+			transactionId,
+			'Merchant Name',
+			'uuid6',
+			'uuid9');
+}
+
+AccountBalance generateFakeAccountBalance ()
+{
+	return AccountBalance(
+			'GBP',
+			1000,
+			2000,
+			100,
+			'timestamp',
+			'uuid3',
+			'uuid9');
 }
 
 List<AccountTransaction> generateFakeAccountTransactions(String transactionIdSuffix) {

@@ -21,6 +21,10 @@ class Http {
 
   Future<Map<String, dynamic>> _getJsonFromResponse(Response response) async {
     if (response.statusCode != 200) {
+      print("Status code: " + response.statusCode.toString());
+      print("Reason: " + response.reasonPhrase.toString());
+      print("Request: " + response.request.toString());
+      print("Body: " + response.body);
       return null;
     }
 
