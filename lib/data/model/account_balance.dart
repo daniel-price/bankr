@@ -20,5 +20,5 @@ class AccountBalance extends IPersist {
   DateTime get updated => DateTime.parse(updateTimestamp);
 
   @override
-  ApiReferenceData get apiReferenceData => null;
+  ColumnNameAndData get apiReferenceData => null;
 }

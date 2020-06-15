@@ -46,6 +46,5 @@ class AccountTransaction extends IPersist {
   => _merchantName;
 
   @override
-  ApiReferenceData get apiReferenceData
-  => ApiReferenceData('transactionId', transactionId);
+  ColumnNameAndData get apiReferenceData => ColumnNameAndData('transactionId', transactionId);
 }

@@ -12,7 +12,7 @@ class SembastDao<E extends IPersist> extends IDao<E> {
 
   @override
   void delete(E saveableI) async {
-	  final finder = Finder(filter: Filter.byKey(saveableI.uuid));
+    final finder = Finder(filter: Filter.byKey(saveableI.uuid));
     await _store.delete(
       _db,
       finder: finder,
@@ -22,35 +22,40 @@ class SembastDao<E extends IPersist> extends IDao<E> {
   @override
   Future<List<E>> getAll() async {
     final finder = Finder();
-    final recordSnapshots = await _store.find(
-      _db,
-      finder: finder,
-    );
-
-    return recordSnapshots.map((snapshot) {
-      return getEntityFromSnapshot(snapshot);
-    }).toList();
+    return await _getAllForFinder(finder);
   }
 
-  E getEntityFromSnapshot(RecordSnapshot<String, Map<String, dynamic>> snapshot) {
+  Future<List<E>> _getAllForFinder (Finder finder)
+  async {
+	  final recordSnapshots = await _store.find(
+		  _db,
+		  finder: finder,
+	  );
+
+	  return recordSnapshots.map((snapshot) {
+		  return _getEntityFromSnapshot(snapshot);
+	  }).toList();
+  }
+
+  E _getEntityFromSnapshot (RecordSnapshot<String, Map<String, dynamic>> snapshot)
+  {
     return _jsonConverter.fromMap(snapshot.value);
   }
 
   @override
   Future<E> get(String uuid) async {
     var filter = Filter.equals('uuid', uuid);
-    return await getEntityForFilter(filter);
+    return await getEntity(filter);
   }
 
-  Future<E> getEntityForFilter(Filter filter) async {
-    RecordSnapshot<String, Map<String, dynamic>> recordSnapshot = await getSnapshotForFilter(filter);
-    return getEntityFromSnapshot(recordSnapshot);
-  }
-
-  Future<RecordSnapshot<String, Map<String, dynamic>>> getSnapshotForFilter(Filter filter) async {
-    var finder = Finder(filter: filter);
-    var recordSnapshot = await _store.findFirst(_db, finder: finder);
-    return recordSnapshot;
+  Future<E> getEntityForFinder (Finder finder)
+  async {
+	  RecordSnapshot<String, Map<String, dynamic>> recordSnapshot = await _store.findFirst(_db, finder: finder);
+	  if (recordSnapshot == null)
+	  {
+		  return null;
+	  }
+	  return _getEntityFromSnapshot(recordSnapshot);
   }
 
   @override
@@ -58,7 +63,6 @@ class SembastDao<E extends IPersist> extends IDao<E> {
 	  var record = _store.record(saveableI.uuid);
 	  await record.put(_db, _jsonConverter.toMap(saveableI));
   }
-
 
   @override
   update(E saveableI) async {
@@ -73,20 +77,55 @@ class SembastDao<E extends IPersist> extends IDao<E> {
   @override
   void insertIfNew (E saveableI)
   async {
-    if (await isNew(saveableI.apiReferenceData))
-    {
+	  if (await isNew(saveableI.apiReferenceData))
+	  {
       await insert(saveableI);
     }
   }
 
-  Future<bool> isNew (ApiReferenceData apiReferenceData)
+  Future<bool> isNew (ColumnNameAndData apiReferenceData)
   async {
-    if (apiReferenceData == null)
-    {
+	  if (apiReferenceData == null)
+	  {
       return true;
     }
 
-    var filter = Filter.equals(apiReferenceData.name, apiReferenceData.data);
-    return await getSnapshotForFilter(filter) == null;
+	  var filter = getFilter(apiReferenceData);
+	  var entity = await getEntity(filter);
+	  return entity == null;
   }
+
+  @override
+  Future<E> getLatestMatch (ColumnNameAndData filterOn, String dateTimeColumn)
+  {
+	  var filter = getFilter(filterOn);
+	  var sortOrder = SortOrder(dateTimeColumn, false);
+	  return getEntity(filter, sortOrder: sortOrder);
+  }
+
+  Future<E> getEntity (Filter filter, {SortOrder sortOrder})
+  {
+	  var finder = Finder(filter: filter, sortOrders: [sortOrder]);
+	  return getEntityForFinder(finder);
+  }
+
+  @override
+  Future<E> getMatch (ColumnNameAndData filterOn)
+  {
+	  var filter = getFilter(filterOn);
+	  return getEntity(filter);
+  }
+
+  @override
+  Future<List<E>> getAllMatches (ColumnNameAndData filterOn)
+  {
+	  var filter = getFilter(filterOn);
+	  var finder = Finder(filter: filter);
+	  return _getAllForFinder(finder);
+  }
+}
+
+Filter getFilter (ColumnNameAndData filterOn)
+{
+	return Filter.equals(filterOn.name, filterOn.data);
 }

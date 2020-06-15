@@ -27,6 +27,12 @@ class TransactionsScreenController {
     list.sort();
     return list;
   }
+
+  void testMethod() async {
+    var dao = accountTransactionDao;
+    var allElements = await dao.getAll();
+    print(allElements.length);
+  }
 }
 
 class AccountTransactionRow implements Comparable<AccountTransactionRow> {

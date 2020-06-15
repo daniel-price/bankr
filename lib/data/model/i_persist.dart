@@ -7,16 +7,17 @@ abstract class IPersist {
     String uuid,
   ]) : this.uuid = uuid ?? Uuid().v4();
 
-  ApiReferenceData get apiReferenceData;
+  ColumnNameAndData get apiReferenceData;
 }
 
-class ApiReferenceData {
+class ColumnNameAndData {
   final String _name;
-  final String _data;
+  final Object _data;
 
-  ApiReferenceData(this._name, this._data);
+  ColumnNameAndData(this._name, this._data);
 
   String get name => _name;
 
-  String get data => _data;
+  Object get data
+  => _data;
 }

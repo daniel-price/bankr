@@ -1,8 +1,9 @@
+/*
 import 'package:bankr/auth/access_token.dart';
-import 'package:bankr/auth/oauth/o_auth_access_token_retriever.dart';
+import 'package:bankr/auth/oauth/access_token_retriever.dart';
 import 'package:bankr/auth/oauth/o_auth_authenticator.dart';
-import 'package:bankr/auth/oauth/o_auth_code_generator.dart';
-import 'package:bankr/auth/oauth/o_auth_request_generator.dart';
+import 'package:bankr/auth/oauth/auth_code_generator.dart';
+import 'package:bankr/auth/oauth/auth_request_generator.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
@@ -85,3 +86,4 @@ void main() {
     });
   });
 }
+*/

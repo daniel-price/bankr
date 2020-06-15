@@ -1,7 +1,9 @@
 import 'package:bankr/screen/accounts_screen.dart';
 import 'package:bankr/screen/transactions_screen.dart';
+import 'package:bankr/screen/transactions_screen_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -10,7 +12,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
-  final List<Widget> _children = [AccountsScreen(), TransactionsScreen()];
+  final List<Widget> _children = [AccountsScreen(), TransactionsScreen(), DevScreen()];
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,10 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: new Icon(Icons.mail),
             title: new Text('Transactions'),
           ),
+          BottomNavigationBarItem(
+            icon: new Icon(Icons.settings),
+            title: new Text('Dev'),
+          ),
         ],
       ),
     );
@@ -38,4 +44,42 @@ class _HomeScreenState extends State<HomeScreen> {
       _currentIndex = index;
     });
   }
+}
+
+class DevScreen extends StatefulWidget
+{
+	@override
+	_DevScreenState createState ()
+	=> _DevScreenState();
+}
+
+class _DevScreenState extends State<DevScreen>
+{
+	TransactionsScreenController controller;
+
+	@override
+	Widget build (BuildContext context)
+	{
+		controller = Provider.of<TransactionsScreenController>(context);
+		return Scaffold(
+			appBar: AppBar(
+				title: Text('Transactions'),
+			),
+			body: Container(
+				width: double.infinity,
+				height: double.infinity,
+				child: Column(
+					children: <Widget>[
+						RaisedButton(
+							onPressed: ()
+							{
+								controller.testMethod();
+							},
+							child: const Text('Test', style: TextStyle(fontSize: 20)),
+						)
+					],
+				),
+			),
+		);
+	}
 }

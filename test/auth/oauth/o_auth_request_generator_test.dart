@@ -1,4 +1,5 @@
-import 'package:bankr/auth/oauth/o_auth_request_generator.dart';
+/*
+import 'package:bankr/auth/oauth/auth_request_generator.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -7,7 +8,7 @@ void main() {
   String redirectUrl = 'theredirectUrl';
   String code = 'thecode';
   String refreshToken = 'therefreshToken';
-  var oAuthRequestGenerator = OAuthRequestGenerator(identifier, secret, redirectUrl);
+  var oAuthRequestGenerator = AuthRequestGenerator(identifier, secret, redirectUrl);
 
   group('generateAuthorizationJson', () {
     test('check returned authorization code map is correct', () {
@@ -38,3 +39,4 @@ void main() {
     });
   });
 }
+*/

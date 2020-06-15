@@ -37,6 +37,5 @@ class Account extends IPersist {
   => _uuidProvider;
 
   @override
-  ApiReferenceData get apiReferenceData
-  => ApiReferenceData('accountId', accountId);
+  ColumnNameAndData get apiReferenceData => ColumnNameAndData('accountId', accountId);
 }

@@ -1,24 +1,23 @@
-import 'dart:io';
+import 'dart:collection';
 
 import 'package:bankr/api/i_api_adapter.dart';
-import 'package:bankr/auth/access_token_store.dart';
+import 'package:bankr/api/true_layer/true_layer_account_provider_reference_data.dart';
 import 'package:bankr/data/model/account.dart';
 import 'package:bankr/data/model/account_balance.dart';
+import 'package:bankr/data/model/account_provider.dart';
 import 'package:bankr/data/model/account_transaction.dart';
-import 'package:bankr/data/model/i_persist.dart';
-import 'package:bankr/util/http.dart';
-
-import 'file:///C:/bankr/lib/data/download/account_provider_reference_data.dart';
+import 'package:bankr/util/date_range.dart';
+import 'package:oauth_http/oauth_http.dart';
 
 class TrueLayerApiAdapter extends IApiAdapter {
-  final Http _http;
-  final AccessTokenStore _accessTokenStore;
+  final OAuthHttp _oAuthHttp;
+  final HashMap<String, TLAccountProviderReferenceData> _accountProviderReferenceDataById;
 
-  TrueLayerApiAdapter(this._http, this._accessTokenStore);
+  TrueLayerApiAdapter(this._oAuthHttp, this._accountProviderReferenceDataById);
 
   @override
   Future<List<Account>> retrieveAccounts(String uuidAccessToken, String uuidProvider) async {
-    var results = await _doGet(
+	  var results = await _oAuthHttp.doGet(
       "https://api.truelayer.com/data/v1/accounts",
       uuidAccessToken,
     );
@@ -45,7 +44,7 @@ class TrueLayerApiAdapter extends IApiAdapter {
     {
       url += '?from=${dateRange.fromAsISOString}&to=${dateRange.toAsISOString}';
     }
-    var results = await _doGet(
+    var results = await _oAuthHttp.doGet(
       url,
       uuidAccessToken,
     );
@@ -65,8 +64,8 @@ class TrueLayerApiAdapter extends IApiAdapter {
     return list;
   }
 
-  Account _accountFromResult (Map<String, dynamic> map, String uuidProvider)
-  {
+	Account _accountFromResult (Map<String, dynamic> map, String uuidProvider)
+	{
     String updateTimestamp = map['update_timestamp'] as String;
     String accountId = map['account_id'] as String;
     String accountType = map['account_type'] as String;
@@ -88,20 +87,20 @@ class TrueLayerApiAdapter extends IApiAdapter {
     }
 
     return Account(
-        updateTimestamp,
-        accountId,
-        accountType,
-        name,
-        currency,
-        iban,
-        swiftBic,
-        number,
-        sortCode,
-        uuidProvider);
+		    updateTimestamp,
+		    accountId,
+		    accountType,
+		    name,
+		    currency,
+		    iban,
+		    swiftBic,
+		    number,
+		    sortCode,
+		    uuidProvider);
   }
 
-  AccountTransaction _accountTransactionFromResult (Map<String, dynamic> map, String uuidAccount)
-  {
+	AccountTransaction _accountTransactionFromResult (Map<String, dynamic> map, String uuidAccount)
+	{
     var timestamp = map['timestamp'] as String;
     var description = map['description'] as String;
     var transactionType = map['transaction_type'] as String;
@@ -113,51 +112,33 @@ class TrueLayerApiAdapter extends IApiAdapter {
     var merchantName = map['merchant_name'] as String;
 
     return AccountTransaction(
-        timestamp,
-        description,
-        transactionType,
-        transactionCategory,
-        amount,
-        currency,
-        transactionId,
-        merchantName,
-        uuidAccount);
-  }
-
-  Future<List> _doGet (String url, String uuidAccessToken)
-  async {
-    var token = await _accessTokenStore.getToken(uuidAccessToken);
-    var response = await _http.doGetAndGetJsonResponse(
-      url,
-      {
-        HttpHeaders.authorizationHeader: "Bearer $token",
-      },
-    );
-
-    if (response == null)
-    {
-      return null;
-    }
-
-    return response['results'] as List<dynamic>;
+		    timestamp,
+		    description,
+		    transactionType,
+		    transactionCategory,
+		    amount,
+		    currency,
+		    transactionId,
+		    merchantName,
+		    uuidAccount);
   }
 
   @override
   Future<AccountBalance> retrieveBalance (String uuidAccessToken, Account account)
   async {
-    var results = await _doGet(
+	  var results = await _oAuthHttp.doGet(
       "https://api.truelayer.com/data/v1/accounts/${account.accountId}/balance",
       uuidAccessToken,
     );
 
-    if (results == null)
-    {
+	  if (results == null)
+	  {
       return null;
     }
 
     //TODO - change to assert
-    if (results.length != 1)
-    {
+	  if (results.length != 1)
+	  {
       print("expected 1 result but got ${results.length}");
     }
 
@@ -165,8 +146,8 @@ class TrueLayerApiAdapter extends IApiAdapter {
     return _accountBalanceFromResult(result, account.uuid);
   }
 
-  AccountBalance _accountBalanceFromResult (Map<String, dynamic> map, String uuidAccount)
-  {
+	AccountBalance _accountBalanceFromResult (Map<String, dynamic> map, String uuidAccount)
+	{
     var currency = map['currency'] as String;
     var available = map['available'] as double;
     var current = map['current'] as double;
@@ -177,10 +158,10 @@ class TrueLayerApiAdapter extends IApiAdapter {
     return AccountBalance(currency, available, current, overdraft, updateTimestamp, uuidAccount);
   }
 
-  double getAsDouble (dynamic number)
-  {
-    if (number == null || number.runtimeType == double)
-    {
+	double getAsDouble (dynamic number)
+	{
+		if (number == null || number.runtimeType == double)
+		{
       return number as double;
     }
 
@@ -190,19 +171,19 @@ class TrueLayerApiAdapter extends IApiAdapter {
   @override
   Future<AccountProvider> retrieveAccountProvider (String uuidAccessToken)
   async {
-    var results = await _doGet(
+	  var results = await _oAuthHttp.doGet(
       "https://api.truelayer.com/data/v1/me",
       uuidAccessToken,
     );
 
-    if (results == null)
-    {
+	  if (results == null)
+	  {
       return null;
     }
 
     //TODO - change to assert
-    if (results.length != 1)
-    {
+	  if (results.length != 1)
+	  {
       print("expected 1 result but got ${results.length}");
     }
 
@@ -210,14 +191,14 @@ class TrueLayerApiAdapter extends IApiAdapter {
     return _accountProviderFromResult(result, uuidAccessToken);
   }
 
-  AccountProvider _accountProviderFromResult (Map<String, dynamic> map, String uuidAccessToken)
-  {
+	AccountProvider _accountProviderFromResult (Map<String, dynamic> map, String uuidAccessToken)
+	{
     var provider = map['provider'] as Map<String, dynamic>;
     var displayName = provider['display_name'] as String;
     var logoUri = provider['logo_uri'] as String;
     var providerId = provider['provider_id'] as String;
 
-    var accountProvider = AccountProviderReferenceDataCache.getAccountProvider(providerId);
+    var accountProvider = _accountProviderReferenceDataById[providerId];
     var dataAccessSavingsDays = accountProvider?.dataAccessSavingsDays ?? 90;
     var dataCardsDays = accountProvider?.dataCardsDays ?? 90;
     var canRequestAllDataAtAnyTime = accountProvider?.canRequestAllDataAtAnyTime ?? false;
@@ -233,69 +214,5 @@ class TrueLayerApiAdapter extends IApiAdapter {
       logoSvg,
       uuidAccessToken,
     );
-  }
-}
-
-class AccountProvider extends IPersist
-{
-  final String _displayName;
-  final String _logoUri;
-  final String _providerId;
-  final int _dataAccessSavingsDays;
-  final int _dataCardsDays;
-  final bool _canRequestAllDataAtAnyTime;
-  final String _logoSvg;
-  final String _uuidAccessToken;
-
-  AccountProvider (this._displayName, this._logoUri, this._providerId, this._dataAccessSavingsDays, this._dataCardsDays, this._canRequestAllDataAtAnyTime, this._logoSvg, this._uuidAccessToken,
-      [String uuid])
-      : super(uuid);
-
-  String get displayName
-  => _displayName;
-
-  String get logoUri
-  => _logoUri;
-
-  String get providerId
-  => _providerId;
-
-  int get dataAccessSavingsDays
-  => _dataAccessSavingsDays;
-
-  int get dataCardsDays
-  => _dataCardsDays;
-
-  bool get canRequestAllDataAtAnyTime
-  => _canRequestAllDataAtAnyTime;
-
-  String get logoSvg
-  => _logoSvg;
-
-  String get uuidAccessToken
-  => _uuidAccessToken;
-
-  @override
-  ApiReferenceData get apiReferenceData
-  => ApiReferenceData('providerId', providerId);
-}
-
-class DateRange
-{
-  final DateTime from;
-  final DateTime to;
-
-  DateRange (this.from, this.to);
-
-  String get toAsISOString
-  => asIsoString(to);
-
-  String get fromAsISOString
-  => asIsoString(from);
-
-  String asIsoString (DateTime dateTime)
-  {
-    var iso8601string = dateTime.toIso8601String();
-    return iso8601string.split('.')[0];
   }
 }

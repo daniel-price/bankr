@@ -1,5 +1,5 @@
 import 'package:bankr/api/i_api_adapter.dart';
-import 'package:bankr/data/download/download_mediator.dart';
+import 'package:bankr/data/download/data_saver.dart';
 import 'package:bankr/data/model/account.dart';
 import 'package:bankr/data/model/account_transaction.dart';
 import 'package:flutter_test/flutter_test.dart';

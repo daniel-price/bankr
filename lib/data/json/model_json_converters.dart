@@ -1,7 +1,8 @@
-import 'package:bankr/api/true_layer_api_adapter.dart';
 import 'package:bankr/data/json/i_json_converter.dart';
 import 'package:bankr/data/model/account.dart';
 import 'package:bankr/data/model/account_balance.dart';
+import 'package:bankr/data/model/account_provider.dart';
+import 'package:bankr/data/model/account_provider_update_audit.dart';
 import 'package:bankr/data/model/account_transaction.dart';
 
 class AccountJsonConverter extends IJsonConverter<Account> {
@@ -125,6 +126,26 @@ class AccountProviderJsonConverter extends IJsonConverter<AccountProvider>
       'logoSvg': provider.logoSvg,
       'uuidAccessToken': provider.uuidAccessToken,
       'uuid': provider.uuid,
+    };
+  }
+}
+
+class AccountProviderUpdateAuditJsonConverter extends IJsonConverter<AccountProviderUpdateAudit> {
+  AccountProviderUpdateAudit fromMap(Map<String, dynamic> map) {
+    return AccountProviderUpdateAudit(
+      map['uuidAccountProvider'] as String,
+      map['updateTimestamp'] as String,
+      map['success'] as bool,
+      map['uuid'] as String,
+    );
+  }
+
+  Map<String, dynamic> toMap(AccountProviderUpdateAudit accountProviderUpdateAudit) {
+    return <String, dynamic>{
+      'uuidAccountProvider': accountProviderUpdateAudit.accountProviderUuid,
+      'updateTimestamp': accountProviderUpdateAudit.updateTimestamp,
+      'success': accountProviderUpdateAudit.success,
+      'uuid': accountProviderUpdateAudit.uuid,
     };
   }
 }

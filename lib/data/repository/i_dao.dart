@@ -20,4 +20,10 @@ abstract class IDao<E extends IPersist> {
   }
 
   void insertIfNew (E persist);
+
+  Future<E> getLatestMatch(ColumnNameAndData filterOn, String dateTimeColumn);
+
+  Future<E> getMatch(ColumnNameAndData filterOn);
+
+  Future<List<E>> getAllMatches(ColumnNameAndData filterOn);
 }

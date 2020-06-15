@@ -44,7 +44,17 @@ class _AccountsScreenState extends State<AccountsScreen> {
                               flex: 10,
                             ),
                             Expanded(
-                              child: Text(accountRow.accountName),
+                              child: Column(
+                                children: <Widget>[
+                                  Text(
+                                    accountRow.accountName,
+                                  ),
+                                  Text(
+                                    accountRow.lastUpdatedDesc,
+                                  ),
+                                ],
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                              ),
                               flex: 50,
                             ),
                             Expanded(
@@ -69,8 +79,8 @@ class _AccountsScreenState extends State<AccountsScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: ()
-        async {
+	      onPressed: ()
+	      async {
           bool accessTokenAdded = await controller.addAccessToken();
           if (!accessTokenAdded && mounted)
           {
@@ -86,13 +96,13 @@ class _AccountsScreenState extends State<AccountsScreen> {
 
   Future<void> _refresh ()
   async {
-    var allUpdated = await controller.updateAllAccounts();
-    if (mounted)
-    {
-      setState(()
-      {});
-      if (!allUpdated)
-      {
+	  var allUpdated = await controller.updateAllProviders();
+	  if (mounted)
+	  {
+		  setState(()
+		  {});
+		  if (!allUpdated)
+		  {
         final snackBar = SnackBar(content: Text("Unable to refresh"));
         Scaffold.of(context).showSnackBar(snackBar);
       }
