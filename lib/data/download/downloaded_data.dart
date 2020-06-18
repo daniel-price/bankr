@@ -9,7 +9,12 @@ class DownloadedData {
   final List<AccountBalance> _accountBalances;
   final List<AccountTransaction> _accountTransactions;
 
-  DownloadedData(this._accountProvider, this._accounts, this._accountBalances, this._accountTransactions);
+  DownloadedData(this._accountProvider, this._accounts, this._accountBalances, this._accountTransactions) {
+    assert(this._accountProvider != null);
+    assert(this._accounts != null);
+    assert(this._accountBalances != null);
+    assert(this._accountTransactions != null);
+  }
 
   AccountProvider get accountProvider => _accountProvider;
 

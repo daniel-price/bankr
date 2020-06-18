@@ -13,7 +13,18 @@ class AccountTransaction extends IPersist {
 
   AccountTransaction(this._timestamp, this._description, this._transactionType, this._transactionCategory, this._amount, this._currency, this._transactionId, this._merchantName, this._uuidAccount,
       [String uuid])
-      : super(uuid);
+      : super(uuid) {
+    assert(this._timestamp != null);
+    assert(this._description != null);
+    assert(this._transactionType != null);
+    assert(this._transactionCategory != null);
+    assert(this._amount != null);
+    assert(this._currency != null);
+    assert(this._transactionId != null);
+    assert(this._merchantName != null);
+    assert(this._uuidAccount != null);
+    assert(this.uuid != null);
+  }
 
   String get timestamp => _timestamp;
 

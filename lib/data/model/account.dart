@@ -13,7 +13,19 @@ class Account extends IPersist {
   final String _uuidProvider;
 
   Account(this._updateTimestamp, this._accountId, this._accountType, this._name, this._currency, this._iban, this._swiftBic, this._number, this._sortCode, this._uuidProvider, [String uuid])
-      : super(uuid);
+      : super(uuid) {
+    assert(this._updateTimestamp != null);
+    assert(this._accountId != null);
+    assert(this._accountType != null);
+    assert(this._name != null);
+    assert(this._currency != null);
+    assert(this._iban != null);
+    assert(this._swiftBic != null);
+    assert(this._number != null);
+    assert(this._sortCode != null);
+    assert(this._uuidProvider != null);
+    assert(this.uuid != null);
+  }
 
   String get updateTimestamp => _updateTimestamp;
 

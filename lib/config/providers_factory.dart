@@ -1,7 +1,5 @@
-import 'dart:collection';
 
 import 'package:bankr/api/i_api_adapter.dart';
-import 'package:bankr/api/true_layer/true_layer_account_provider_reference_data.dart';
 import 'package:bankr/api/true_layer/true_layer_api_adapter.dart';
 import 'package:bankr/config/config.dart';
 import 'package:bankr/data/download/data_downloader.dart';
@@ -31,13 +29,6 @@ Future<List<SingleChildWidget>> factoryProviders() async {
     Provider<AccountsScreenController>(create: (context) => accountsScreenController),
     Provider<TransactionsScreenController>(create: (context) => transactionsScreenController),
   ];
-}
-
-IApiAdapter factoryTrueLayerApiAdapter(OAuthHttp oAuthHttp) {
-  HashMap<String, TLAccountProviderReferenceData> accountProvidersById = HashMap();
-  accountProvidersById['ob-monzo'] = TLAccountProviderReferenceData(1 * 365, 1 * 365, false, 'assets/providers/monzo.svg');
-  accountProvidersById['ob-santander'] = TLAccountProviderReferenceData(2 * 365, 2 * 365, true, 'assets/providers/santander.svg');
-  return TrueLayerApiAdapter(oAuthHttp, accountProvidersById);
 }
 
 DataDownloader factoryDataDownloader(DataSaver dataSaver, OAuthHttp oAuthHttp) {

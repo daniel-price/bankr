@@ -66,10 +66,6 @@ class DataRetriever {
   }
 
   DateRange _getProviderTransactionDateRange(AccountProvider accountProvider) {
-    if (accountProvider == null) {
-      return null;
-    }
-
     var now = DateTime.now();
     DateTime from = now.subtract(Duration(days: accountProvider.dataAccessSavingsDays - 1));
     var to = now.subtract(Duration(hours: 6));

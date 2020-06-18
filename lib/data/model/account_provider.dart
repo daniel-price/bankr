@@ -12,7 +12,17 @@ class AccountProvider extends IPersist {
 
   AccountProvider(this._displayName, this._logoUri, this._providerId, this._dataAccessSavingsDays, this._dataCardsDays, this._canRequestAllDataAtAnyTime, this._logoSvg, this._uuidAccessToken,
       [String uuid])
-      : super(uuid);
+      : super(uuid) {
+    assert(this._displayName != null);
+    assert(this._logoUri != null);
+    assert(this._providerId != null);
+    assert(this._dataAccessSavingsDays != null);
+    assert(this._dataCardsDays != null);
+    assert(this._canRequestAllDataAtAnyTime != null);
+    assert(this._logoSvg != null);
+    assert(this._uuidAccessToken != null);
+    assert(this.uuid != null);
+  }
 
   String get displayName => _displayName;
 

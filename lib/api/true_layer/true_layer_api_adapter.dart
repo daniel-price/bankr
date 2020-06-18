@@ -11,13 +11,13 @@ import 'package:oauth_http/oauth_http.dart';
 
 class TrueLayerApiAdapter extends IApiAdapter {
   final OAuthHttp _oAuthHttp;
-  final HashMap<String, TLAccountProviderReferenceData> _accountProviderReferenceDataById;
+  final HashMap<String, TrueLayerAccountProviderReferenceData> _accountProviderReferenceDataById;
 
   TrueLayerApiAdapter(this._oAuthHttp, this._accountProviderReferenceDataById);
 
   @override
   Future<List<Account>> retrieveAccounts(String uuidAccessToken, String uuidProvider) async {
-	  var results = await _oAuthHttp.doGet(
+    var results = await _oAuthHttp.doGet(
       "https://api.truelayer.com/data/v1/accounts",
       uuidAccessToken,
     );
@@ -37,8 +37,7 @@ class TrueLayerApiAdapter extends IApiAdapter {
   }
 
   @override
-  Future<List<AccountTransaction>> retrieveTransactions (String uuidAccessToken, Account account, [DateRange dateRange])
-  async {
+  Future<List<AccountTransaction>> retrieveTransactions(String uuidAccessToken, Account account, [DateRange dateRange]) async {
     String url = "https://api.truelayer.com/data/v1/accounts/${account.accountId}/transactions";
     if (dateRange != null)
     {
@@ -64,8 +63,8 @@ class TrueLayerApiAdapter extends IApiAdapter {
     return list;
   }
 
-	Account _accountFromResult (Map<String, dynamic> map, String uuidProvider)
-	{
+  Account _accountFromResult (Map<String, dynamic> map, String uuidProvider)
+  {
     String updateTimestamp = map['update_timestamp'] as String;
     String accountId = map['account_id'] as String;
     String accountType = map['account_type'] as String;
@@ -87,20 +86,20 @@ class TrueLayerApiAdapter extends IApiAdapter {
     }
 
     return Account(
-		    updateTimestamp,
-		    accountId,
-		    accountType,
-		    name,
-		    currency,
-		    iban,
-		    swiftBic,
-		    number,
-		    sortCode,
-		    uuidProvider);
+        updateTimestamp,
+        accountId,
+        accountType,
+        name,
+        currency,
+        iban,
+        swiftBic,
+        number,
+        sortCode,
+        uuidProvider);
   }
 
-	AccountTransaction _accountTransactionFromResult (Map<String, dynamic> map, String uuidAccount)
-	{
+  AccountTransaction _accountTransactionFromResult (Map<String, dynamic> map, String uuidAccount)
+  {
     var timestamp = map['timestamp'] as String;
     var description = map['description'] as String;
     var transactionType = map['transaction_type'] as String;
@@ -112,33 +111,33 @@ class TrueLayerApiAdapter extends IApiAdapter {
     var merchantName = map['merchant_name'] as String;
 
     return AccountTransaction(
-		    timestamp,
-		    description,
-		    transactionType,
-		    transactionCategory,
-		    amount,
-		    currency,
-		    transactionId,
-		    merchantName,
-		    uuidAccount);
+        timestamp,
+        description,
+        transactionType,
+        transactionCategory,
+        amount,
+        currency,
+        transactionId,
+        merchantName,
+        uuidAccount);
   }
 
   @override
   Future<AccountBalance> retrieveBalance (String uuidAccessToken, Account account)
   async {
-	  var results = await _oAuthHttp.doGet(
+    var results = await _oAuthHttp.doGet(
       "https://api.truelayer.com/data/v1/accounts/${account.accountId}/balance",
       uuidAccessToken,
     );
 
-	  if (results == null)
-	  {
+    if (results == null)
+    {
       return null;
     }
 
     //TODO - change to assert
-	  if (results.length != 1)
-	  {
+    if (results.length != 1)
+    {
       print("expected 1 result but got ${results.length}");
     }
 
@@ -146,8 +145,8 @@ class TrueLayerApiAdapter extends IApiAdapter {
     return _accountBalanceFromResult(result, account.uuid);
   }
 
-	AccountBalance _accountBalanceFromResult (Map<String, dynamic> map, String uuidAccount)
-	{
+  AccountBalance _accountBalanceFromResult (Map<String, dynamic> map, String uuidAccount)
+  {
     var currency = map['currency'] as String;
     var available = map['available'] as double;
     var current = map['current'] as double;
@@ -158,10 +157,10 @@ class TrueLayerApiAdapter extends IApiAdapter {
     return AccountBalance(currency, available, current, overdraft, updateTimestamp, uuidAccount);
   }
 
-	double getAsDouble (dynamic number)
-	{
-		if (number == null || number.runtimeType == double)
-		{
+  double getAsDouble (dynamic number)
+  {
+    if (number == null || number.runtimeType == double)
+    {
       return number as double;
     }
 
@@ -171,19 +170,19 @@ class TrueLayerApiAdapter extends IApiAdapter {
   @override
   Future<AccountProvider> retrieveAccountProvider (String uuidAccessToken)
   async {
-	  var results = await _oAuthHttp.doGet(
+    var results = await _oAuthHttp.doGet(
       "https://api.truelayer.com/data/v1/me",
       uuidAccessToken,
     );
 
-	  if (results == null)
-	  {
+    if (results == null)
+    {
       return null;
     }
 
     //TODO - change to assert
-	  if (results.length != 1)
-	  {
+    if (results.length != 1)
+    {
       print("expected 1 result but got ${results.length}");
     }
 
@@ -191,8 +190,8 @@ class TrueLayerApiAdapter extends IApiAdapter {
     return _accountProviderFromResult(result, uuidAccessToken);
   }
 
-	AccountProvider _accountProviderFromResult (Map<String, dynamic> map, String uuidAccessToken)
-	{
+  AccountProvider _accountProviderFromResult (Map<String, dynamic> map, String uuidAccessToken)
+  {
     var provider = map['provider'] as Map<String, dynamic>;
     var displayName = provider['display_name'] as String;
     var logoUri = provider['logo_uri'] as String;
@@ -215,4 +214,10 @@ class TrueLayerApiAdapter extends IApiAdapter {
       uuidAccessToken,
     );
   }
+}
+
+IApiAdapter factoryTrueLayerApiAdapter (OAuthHttp oAuthHttp)
+{
+  HashMap<String, TrueLayerAccountProviderReferenceData> accountProviderReferenceDataById = factoryAccountProviderReferenceDataById();
+  return TrueLayerApiAdapter(oAuthHttp, accountProviderReferenceDataById);
 }
