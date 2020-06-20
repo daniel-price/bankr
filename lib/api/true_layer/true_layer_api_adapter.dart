@@ -197,11 +197,11 @@ class TrueLayerApiAdapter extends IApiAdapter {
     var logoUri = provider['logo_uri'] as String;
     var providerId = provider['provider_id'] as String;
 
-    var accountProvider = _accountProviderReferenceDataById[providerId];
-    var dataAccessSavingsDays = accountProvider?.dataAccessSavingsDays ?? 90;
-    var dataCardsDays = accountProvider?.dataCardsDays ?? 90;
-    var canRequestAllDataAtAnyTime = accountProvider?.canRequestAllDataAtAnyTime ?? false;
-    var logoSvg = accountProvider?.logoSvg ?? '';
+    var accountProviderReferenceData = _accountProviderReferenceDataById[providerId];
+    var dataAccessSavingsDays = accountProviderReferenceData?.dataAccessSavingsDays ?? 90;
+    var dataCardsDays = accountProviderReferenceData?.dataCardsDays ?? 90;
+    var canRequestAllDataAtAnyTime = accountProviderReferenceData?.canRequestAllDataAtAnyTime ?? false;
+    var logoSvg = accountProviderReferenceData?.logoSvg ?? '';
 
     return AccountProvider(
       displayName,

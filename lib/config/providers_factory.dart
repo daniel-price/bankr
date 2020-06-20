@@ -19,11 +19,11 @@ Future<List<SingleChildWidget>> factoryProviders() async {
   var accountTransactionDao = daoFactory.factoryAccountTransactionDao();
   var accountProviderDao = daoFactory.factoryAccountProviderDao();
   var accountProviderUpdateAuditDao = daoFactory.factoryAccountProviderUpdateAuditDao();
-  var dataSaver = DataSaver(accountProviderDao, accountDao, accountBalanceDao, accountTransactionDao);
+  var dataSaver = DataSaver(accountProviderDao, accountDao, accountBalanceDao, accountTransactionDao, accountProviderUpdateAuditDao);
   var authHttp = factoryOAuthHttp();
   var dataDownloader = factoryDataDownloader(dataSaver, authHttp);
   var accountsScreenController = AccountsScreenController(accountDao, authHttp, dataDownloader, accountBalanceDao, accountProviderDao, accountProviderUpdateAuditDao);
-  var transactionsScreenController = TransactionsScreenController(accountTransactionDao, accountDao);
+  var transactionsScreenController = TransactionsScreenController(accountTransactionDao, accountDao, accountProviderDao);
 
   return [
     Provider<AccountsScreenController>(create: (context) => accountsScreenController),

@@ -21,7 +21,7 @@ class AccountTransaction extends IPersist {
     assert(this._amount != null);
     assert(this._currency != null);
     assert(this._transactionId != null);
-    assert(this._merchantName != null);
+    //assert(this._merchantName != null); merchant name can be null
     assert(this._uuidAccount != null);
     assert(this.uuid != null);
   }

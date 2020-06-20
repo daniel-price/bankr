@@ -12,7 +12,7 @@ class AccountBalance extends IPersist {
     assert(this._currency != null);
     assert(this._available != null);
     assert(this.current != null);
-    assert(this._overdraft != null);
+    //assert(this._overdraft != null); overdraft can be null.
     assert(this._updateTimestamp != null);
     assert(this._uuidAccount != null);
     assert(this.uuid != null);

@@ -20,23 +20,33 @@ class AccountsScreenController {
 
   AccountsScreenController(this._accountDao, this._authHttp, this._downloadMediator, this._accountBalanceDao, this._accountProviderDao, this._accountProviderUpdateAuditDao);
 
-  Future<List<AccountRow>> getAllAccounts() async {
-    var accounts = await _accountDao.getAll();
+  Future<List<ProviderRow>> getProviderRows ()
+  async {
+    var providerRows = List<ProviderRow>();
 
-    List<AccountRow> accountRows = List();
-    for (Account account in accounts) {
-      AccountBalance latestAccountBalance = await _accountBalanceDao.getLatestMatch(ColumnNameAndData('uuidAccount', account.uuid), 'updateTimeStamp');
-      AccountProvider accountProvider = await _accountProviderDao.getMatch(ColumnNameAndData('uuid', account.uuidProvider));
+    var accountProviders = await _accountProviderDao.getAll();
+    for (AccountProvider accountProvider in accountProviders)
+    {
       AccountProviderUpdateAudit latestAccountProviderUpdateAudit =
       await _accountProviderUpdateAuditDao.getLatestMatch(ColumnNameAndData('uuidAccountProvider', accountProvider.uuid), 'updateTimestamp');
-      var accountRow = AccountRow(account, latestAccountBalance, accountProvider, latestAccountProviderUpdateAudit);
+      var accountRows = await factoryAccountRows(accountProvider);
+      var providerRow = ProviderRow(accountProvider, latestAccountProviderUpdateAudit, accountRows);
+      providerRows.add(providerRow);
+    }
+
+    return providerRows;
+  }
+
+  factoryAccountRows (AccountProvider accountProvider)
+  async {
+    var accountRows = List<AccountRow>();
+    var accounts = await _accountDao.getAllMatches(ColumnNameAndData('uuidProvider', accountProvider.uuid));
+    for (Account account in accounts) {
+      AccountBalance latestAccountBalance = await _accountBalanceDao.getLatestMatch(ColumnNameAndData('uuidAccount', account.uuid), 'updateTimeStamp');
+      var accountRow = AccountRow(account, latestAccountBalance);
       accountRows.add(accountRow);
     }
 
-    /*var allUpdateAudits = await _accountProviderUpdateAuditDao.getAll();
-    allUpdateAudits.forEach((element) {
-    	print(element.updatedTime);
-    });*/
     return accountRows;
   }
 
@@ -57,9 +67,6 @@ class AccountsScreenController {
     {
       var accounts = await _accountDao.getAllMatches(ColumnNameAndData('uuidProvider', accountProvider.uuid));
       var downloaded = await _downloadMediator.update(accountProvider, accounts);
-      var providerUpdateAudit = AccountProviderUpdateAudit.factory(accountProvider.uuid, DateTime.now(), downloaded);
-      await _accountProviderUpdateAuditDao.insert(providerUpdateAudit);
-      print('updated for accountProvider ${accountProvider.displayName}, ${accounts.length} accounts');
       allUpdated = allUpdated && downloaded;
     }
 
@@ -103,23 +110,13 @@ class AccountsScreenController {
   }
 }
 
-class AccountRow
+class ProviderRow
 {
-  final Account _account;
-  final AccountBalance _accountBalance;
   final AccountProvider _accountProvider;
   final AccountProviderUpdateAudit _accountProviderUpdateAudit;
+  final List<AccountRow> _accountRows;
 
-  AccountRow (this._account, this._accountBalance, this._accountProvider, this._accountProviderUpdateAudit);
-
-  AccountBalance get accountBalance
-  => _accountBalance;
-
-  String get accountName
-  => _account.name;
-
-  String get currentAccountBalance
-  => _accountBalance?.current.toString() ?? "Downloading...";
+  ProviderRow (this._accountProvider, this._accountProviderUpdateAudit, this._accountRows);
 
   String get lastUpdatedDesc
   {
@@ -130,38 +127,119 @@ class AccountRow
 
     var lastUpdatedDescPrefix = getLastUpdatedDescPrefix();
 
-    return '$lastUpdatedDescPrefix: ${_accountProviderUpdateAudit.updatedTime.toString()}';
+    var lastUpdatedDescSuffix = getLastUpdatedDescSuffix();
+
+    return '$lastUpdatedDescPrefix $lastUpdatedDescSuffix';
   }
+
+  String get providerDesc
+  => _accountProvider?.displayName ?? 'Downloading...';
+
+  String get totalBalanceDesc
+  {
+    var totalBalance = 0.0;
+    for (AccountRow accountRow in _accountRows)
+    {
+      var accountBalance = accountRow.accountBalance;
+      var current = accountBalance.current;
+      totalBalance += current;
+    }
+
+    return getBalanceDesc(totalBalance);
+  }
+
+  get accountProvider
+  => _accountProvider;
+
+  String get providerId
+  => _accountProvider.providerId;
+
 
   String getLastUpdatedDescPrefix ()
   {
     if (_accountProviderUpdateAudit.success)
     {
-      return 'Last updated at';
+      return 'Last updated';
     }
-    return 'Failed to update at';
+    return 'Failed to update';
   }
 
-  Widget getImage ()
+  List<AccountRow> get accountRows
+  => _accountRows;
+
+  getLastUpdatedDescSuffix ()
   {
-    if (_accountProvider.logoSvg != null)
+    var now = DateTime.now();
+    var updatedTime = _accountProviderUpdateAudit.updatedTime;
+    var difference = now.difference(updatedTime);
+    var differenceInDays = difference.inDays;
+    if (differenceInDays > 1)
     {
-      return SvgPicture.asset(
-        _accountProvider.logoSvg,
-        height: 25,
-      );
+      return '$differenceInDays days ago';
     }
 
-    return SvgPicture.network(
-      _accountProvider.logoUri,
-      placeholderBuilder: (BuildContext context)
-      =>
-          Container(
-            padding: const EdgeInsets.all(30.0),
-            child: const CircularProgressIndicator(),
-            height: 25,
-          ),
-      height: 25,
+    var differenceInHours = difference.inHours;
+    if (differenceInHours > 1)
+    {
+      return '$differenceInHours hours ago';
+    }
+
+    var differenceInMinutes = difference.inMinutes;
+    if (differenceInMinutes > 1)
+    {
+      return '$differenceInMinutes minutes ago';
+    }
+
+    return '< 1 minute ago';
+  }
+}
+
+class AccountRow
+{
+  final Account _account;
+  final AccountBalance _accountBalance;
+
+  AccountRow (this._account, this._accountBalance);
+
+  AccountBalance get accountBalance
+  => _accountBalance;
+
+  String get accountBalanceDesc
+  => getBalanceDesc(accountBalance.current);
+
+  String get accountName
+  => _account.name;
+
+  String get currentAccountBalance
+  => _accountBalance?.current.toString() ?? "Downloading...";
+
+  String get number
+  => _account.number;
+
+  String get sortCode
+  => _account.sortCode;
+
+  String get accountType
+  => _account.accountType;
+}
+
+String getBalanceDesc (double totalBalance)
+=> '£' + totalBalance.toStringAsFixed(2);
+
+Widget getImage (AccountProvider accountProvider, double height)
+{
+  if (accountProvider.logoSvg != null)
+  {
+    return SvgPicture.asset(
+      accountProvider.logoSvg,
+      height: height,
     );
   }
+
+  return SvgPicture.network(
+    accountProvider.logoUri,
+    placeholderBuilder: (BuildContext context)
+    => const CircularProgressIndicator(),
+    height: height,
+  );
 }

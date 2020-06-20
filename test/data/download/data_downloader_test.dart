@@ -31,6 +31,12 @@ class DataSaverSpy implements DataSaver {
   save(DownloadedData downloadedData) async {
     saveCounter++;
   }
+
+  @override
+  Future saveAudit(String uuidAccountProvider, bool success) {
+    // TODO: implement saveAudit
+    throw UnimplementedError();
+  }
 }
 
 void main() {

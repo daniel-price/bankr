@@ -1,4 +1,5 @@
 import 'package:bankr/screen/accounts_screen_controller.dart';
+import 'package:bankr/screen/transactions_screen_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,11 +10,13 @@ class AccountsScreen extends StatefulWidget {
 }
 
 class _AccountsScreenState extends State<AccountsScreen> {
-  AccountsScreenController controller;
+  AccountsScreenController _accountsScreenController;
+  TransactionsScreenController _transactionsScreenController;
 
   @override
   Widget build(BuildContext context) {
-    controller = Provider.of<AccountsScreenController>(context);
+    _accountsScreenController = Provider.of<AccountsScreenController>(context);
+    _transactionsScreenController = Provider.of<TransactionsScreenController>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Accounts'),
@@ -24,47 +27,63 @@ class _AccountsScreenState extends State<AccountsScreen> {
         child: RefreshIndicator(
           onRefresh: _refresh,
           child: FutureBuilder(
-            future: controller.getAllAccounts(),
+            future: _accountsScreenController.getProviderRows(),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
                 return ListView.builder(
                   itemCount: snapshot.data.length as int,
                   itemBuilder: (BuildContext context, int position) {
-                    AccountRow accountRow = snapshot.data[position] as AccountRow;
+                    ProviderRow providerRow = snapshot.data[position] as ProviderRow;
+                    /*return ExpansionTile(
+                      leading: Container(
+                        child: providerRow.getImage(40),
+                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+                      ),
+                      title: Row(
+                        children: [
+                          Text(providerRow.providerDesc),
+                          //Text(providerRow.totalBalanceDesc),
+                        ],
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      ),
+                      subtitle: Text(
+                        providerRow.lastUpdatedDesc,
+                      ),
+                      trailing: Text(
+                        providerRow.totalBalanceDesc,
+                        textScaleFactor: 1.1,
+                        textAlign: TextAlign.start,
+                      ),
+                      children: generateAccountRowWidgets(providerRow.accountRows),
+                    );*/
                     return Card(
-                      color: Colors.white,
-                      elevation: 2.0,
-                      child: ListTile(
-                        title: Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Center(
-                                child: accountRow.getImage(),
-                              ),
-                              flex: 10,
+                      child: Column(
+                        children: [
+                          ListTile(
+                            leading: Container(
+                              child: getImage(providerRow.accountProvider, 40),
+                              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
                             ),
-                            Expanded(
-                              child: Column(
-                                children: <Widget>[
-                                  Text(
-                                    accountRow.accountName,
-                                  ),
-                                  Text(
-                                    accountRow.lastUpdatedDesc,
-                                  ),
-                                ],
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                              ),
-                              flex: 50,
+                            title: Row(
+                              children: [
+                                Text(providerRow.providerDesc),
+                                //Text(providerRow.totalBalanceDesc),
+                              ],
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             ),
-                            Expanded(
-                              child: Text(accountRow.currentAccountBalance),
-                              flex: 20,
+                            subtitle: Text(
+                              providerRow.lastUpdatedDesc,
                             ),
-                          ],
-                        ),
-                        //subtitle: Text(account.key.toString()),
-                        onTap: () {},
+                            trailing: Text(
+                              providerRow.totalBalanceDesc,
+                              textScaleFactor: 1.1,
+                              textAlign: TextAlign.start,
+                            ),
+                          ),
+                          Column(
+                            children: generateAccountRowWidgets(providerRow.accountRows),
+                          )
+                        ],
                       ),
                     );
                   },
@@ -79,11 +98,9 @@ class _AccountsScreenState extends State<AccountsScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-	      onPressed: ()
-	      async {
-          bool accessTokenAdded = await controller.addAccessToken();
-          if (!accessTokenAdded && mounted)
-          {
+        onPressed: () async {
+          bool accessTokenAdded = await _accountsScreenController.addAccessToken();
+          if (!accessTokenAdded && mounted) {
             final snackBar = SnackBar(content: Text("Unable to authenticate"));
             Scaffold.of(context).showSnackBar(snackBar);
           }
@@ -96,16 +113,42 @@ class _AccountsScreenState extends State<AccountsScreen> {
 
   Future<void> _refresh ()
   async {
-	  var allUpdated = await controller.updateAllProviders();
-	  if (mounted)
-	  {
-		  setState(()
-		  {});
-		  if (!allUpdated)
-		  {
+    var allUpdated = await _accountsScreenController.updateAllProviders();
+    _transactionsScreenController.invalidateCache();
+    if (mounted)
+    {
+      setState(()
+      {});
+      if (!allUpdated)
+      {
         final snackBar = SnackBar(content: Text("Unable to refresh"));
         Scaffold.of(context).showSnackBar(snackBar);
       }
     }
+  }
+
+  generateAccountRowWidgets (List<AccountRow> accountRows)
+  {
+    var accountRowWidgets = List<Widget>();
+    for (AccountRow accountRow in accountRows)
+    {
+      var listTile = ListTile(
+        title: Text(accountRow.accountName),
+        //subtitle: getSubtitle(accountRow),
+        trailing: Text(accountRow.accountBalanceDesc),
+      );
+      accountRowWidgets.add(listTile);
+    }
+
+    return accountRowWidgets;
+  }
+
+  Text getSubtitle (AccountRow accountRow)
+  {
+    if (accountRow.number == '')
+    {
+      return null;
+    }
+    return Text('${accountRow.number} \r\n${accountRow.sortCode}');
   }
 }

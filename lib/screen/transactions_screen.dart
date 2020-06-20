@@ -1,4 +1,4 @@
-import 'package:bankr/data/model/account_transaction.dart';
+import 'package:bankr/screen/accounts_screen_controller.dart';
 import 'package:bankr/screen/transactions_screen_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +27,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               return ListView.builder(
                 itemCount: snapshot.data.length as int,
                 itemBuilder: (BuildContext context, int position) {
-                  AccountTransactionRow transactionRow = snapshot.data[position] as AccountTransactionRow;
+                  DateTransactionsRow transactionRow = snapshot.data[position] as DateTransactionsRow;
                   return Card(
                       color: Colors.white,
                       elevation: 2.0,
@@ -51,7 +51,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     );
   }
 
-  List<Widget> createWidgets(AccountTransactionRow transactionRow) {
+  List<Widget> createWidgets (DateTransactionsRow transactionRow)
+  {
     List<Widget> widgets = List();
     widgets.add(
       Padding(
@@ -63,24 +64,32 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         ),
       ),
     );
-    for (AccountTransaction accountTransaction in transactionRow.accountTransactions) {
+    for (AccountTransactionRow accountTransaction in transactionRow.accountTransactions)
+    {
       var row = Row(
         children: <Widget>[
-          Expanded(
-            flex: 8,
-            child: Text(
-              accountTransaction.description,
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text(
-              accountTransaction.amount.toString(),
-              textAlign: TextAlign.right,
-            ),
+	        Flexible(
+		        child: Row(
+			        children: [
+				        Padding(
+					        padding: const EdgeInsets.all(8.0),
+					        child: getImage(accountTransaction.accountProvider, 20),
+				        ),
+				        Flexible(
+					        child: Text(
+						        accountTransaction.description,
+					        ),
+				        ),
+			        ],
+		        ),
+	        ),
+	        Text(
+		        accountTransaction.amount.toString(),
+		        textAlign: TextAlign.right,
           ),
         ],
       );
+
       widgets.add(row);
     }
     return widgets;
