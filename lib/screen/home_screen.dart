@@ -1,9 +1,8 @@
-import 'package:bankr/screen/accounts_screen.dart';
-import 'package:bankr/screen/transactions_screen.dart';
-import 'package:bankr/screen/transactions_screen_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
+import 'file:///C:/Projects/bankr/lib/screen/accounts/ui/accounts_screen.dart';
+import 'file:///C:/Projects/bankr/lib/screen/transactions/ui/transactions_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -55,12 +54,9 @@ class DevScreen extends StatefulWidget
 
 class _DevScreenState extends State<DevScreen>
 {
-	TransactionsScreenController controller;
-
 	@override
 	Widget build (BuildContext context)
 	{
-		controller = Provider.of<TransactionsScreenController>(context);
 		return Scaffold(
 			appBar: AppBar(
 				title: Text('Transactions'),
@@ -73,7 +69,6 @@ class _DevScreenState extends State<DevScreen>
 						RaisedButton(
 							onPressed: ()
 							{
-								controller.testMethod();
 							},
 							child: const Text('Test', style: TextStyle(fontSize: 20)),
 						)

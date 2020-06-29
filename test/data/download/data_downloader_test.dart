@@ -4,8 +4,10 @@ import 'package:bankr/data/download/data_saver.dart';
 import 'package:bankr/data/download/downloaded_data.dart';
 import 'package:bankr/data/model/account.dart';
 import 'package:bankr/data/model/account_provider.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:test/test.dart';
 
+import '../../api/true_layer/true_layer_api_adapter_test.dart';
 import '../../fake_data_generator.dart';
 
 class FakeDataRetriever implements DataRetriever {
@@ -34,8 +36,6 @@ class DataSaverSpy implements DataSaver {
 
   @override
   Future saveAudit(String uuidAccountProvider, bool success) {
-    // TODO: implement saveAudit
-    throw UnimplementedError();
   }
 }
 
@@ -43,11 +43,11 @@ void main() {
   group("downloadData", () {
     test("returns true if successful", () async {
       var downloadedData = generateFakeDownloadedData();
-      var dataDownloader = factoryFakeDataDownloader(downloadedData: downloadedData);
+      DataDownloader dataDownloader = factoryFakeDataDownloader(downloadedData: downloadedData);
 
-      var success = await dataDownloader.downloadAllData('uuidAccessToken');
+      var success = await dataDownloader.downloadAllData();
 
-      expect(success, true);
+      expect(success, TypeMatcher<String>());
     });
 
     test("saved data if successful", () async {
@@ -55,17 +55,17 @@ void main() {
       var dataSaver = DataSaverSpy();
       var dataDownloader = factoryFakeDataDownloader(downloadedData: downloadedData, dataSaver: dataSaver);
 
-      await dataDownloader.downloadAllData('uuidAccessToken');
+      await dataDownloader.downloadAllData();
 
       expect(dataSaver.saveCounter, 1);
     });
 
-    test("returns false if no data", () async {
+    test("returns null if no data", () async {
       var dataDownloader = factoryFakeDataDownloader();
 
-      var success = await dataDownloader.downloadAllData('uuidAccessToken');
+      var success = await dataDownloader.downloadAllData();
 
-      expect(success, false);
+      expect(success, null);
     });
 
     test("doesn't save data if unsuccessful", ()
@@ -73,7 +73,7 @@ void main() {
       var dataSaver = DataSaverSpy();
       var dataDownloader = factoryFakeDataDownloader(dataSaver: dataSaver);
 
-      await dataDownloader.downloadAllData('uuidAccessToken');
+      await dataDownloader.downloadAllData();
 
       expect(dataSaver.saveCounter, 0);
     });
@@ -133,5 +133,8 @@ dataDownloaderUpdate (DataDownloader dataDownloader)
 factoryFakeDataDownloader ({DownloadedData downloadedData, DataSaverSpy dataSaver})
 {
   var dataRetriever = FakeDataRetriever(downloadedData);
-  return DataDownloader(dataRetriever, dataSaver ?? DataSaverSpy());
+  var fakeOAuthHttp = FakeOAuthHttp();
+  when(fakeOAuthHttp.authenticate()).thenAnswer((_)
+  => Future.value('code'));
+  return DataDownloader(fakeOAuthHttp, dataRetriever, dataSaver ?? DataSaverSpy());
 }

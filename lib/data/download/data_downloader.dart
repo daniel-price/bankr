@@ -3,21 +3,26 @@ import 'package:bankr/data/download/data_saver.dart';
 import 'package:bankr/data/download/downloaded_data.dart';
 import 'package:bankr/data/model/account.dart';
 import 'package:bankr/data/model/account_provider.dart';
-import 'package:bankr/data/model/account_provider_update_audit.dart';
+import 'package:oauth_http/oauth_http.dart';
 
 class DataDownloader {
+  final OAuthHttp _authHttp;
   final DataRetriever _dataRetriever;
   final DataSaver _dataSaver;
 
-  DataDownloader(this._dataRetriever, this._dataSaver);
+  DataDownloader(this._authHttp, this._dataRetriever, this._dataSaver);
 
-  Future<bool> downloadAllData(String uuidAccessToken) async {
+  Future<String> downloadAllData() async {
+    var uuidAccessToken = await _authHttp.authenticate();
+    if (uuidAccessToken == null) {
+      return null;
+    }
     DownloadedData downloadedData = await _dataRetriever.retrieveAllData(uuidAccessToken);
     if (downloadedData == null) {
-      return false;
+      return null;
     }
     await _dataSaver.save(downloadedData);
-    return true;
+    return uuidAccessToken;
   }
 
   Future<bool> update(AccountProvider accountProvider, List<Account> accounts) async {

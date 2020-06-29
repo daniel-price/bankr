@@ -1,8 +1,11 @@
-import 'package:bankr/screen/accounts_screen_controller.dart';
-import 'package:bankr/screen/transactions_screen_controller.dart';
+import 'package:bankr/data/repository/transaction_repository.dart';
+import 'package:bankr/screen/accounts/provider_info.dart';
+import 'package:bankr/screen/transactions/bloc/transactions_screen_bloc.dart';
+import 'package:bankr/screen/transactions/bloc/transactions_screen_event.dart';
+import 'package:bankr/screen/transactions/bloc/transactions_screen_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TransactionsScreen extends StatefulWidget {
   @override
@@ -12,7 +15,6 @@ class TransactionsScreen extends StatefulWidget {
 class _TransactionsScreenState extends State<TransactionsScreen> {
   @override
   Widget build(BuildContext context) {
-    TransactionsScreenController controller = Provider.of<TransactionsScreenController>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Transactions'),
@@ -20,14 +22,15 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        child: FutureBuilder(
-          future: controller.getAllAccountsTransactions(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.hasData) {
+        child: BlocBuilder<TransactionsScreenBloc, TransactionsScreenState>(
+          bloc: BlocProvider.of(context),
+          builder: (BuildContext context, TransactionsScreenState state) {
+            if (state is StateLoaded) {
+              var dateTransactionsInfos = state.dateTransactionsInfos;
               return ListView.builder(
-                itemCount: snapshot.data.length as int,
+                itemCount: dateTransactionsInfos.length,
                 itemBuilder: (BuildContext context, int position) {
-                  DateTransactionsRow transactionRow = snapshot.data[position] as DateTransactionsRow;
+                  DateTransactionsInfo transactionRow = dateTransactionsInfos[position];
                   return Card(
                       color: Colors.white,
                       elevation: 2.0,
@@ -40,18 +43,20 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       ));
                 },
               );
-            } else {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
             }
+            BlocProvider.of<TransactionsScreenBloc>(context).add(Loaded());
+            return Center(
+              child: CircularProgressIndicator(),
+            );
           },
         ),
+
+
       ),
     );
   }
 
-  List<Widget> createWidgets (DateTransactionsRow transactionRow)
+  List<Widget> createWidgets (DateTransactionsInfo transactionRow)
   {
     List<Widget> widgets = List();
     widgets.add(

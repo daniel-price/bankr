@@ -29,6 +29,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.4.1"
+  bloc:
+    dependency: "direct main"
+    description:
+      name: bloc
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -169,6 +176,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.6"
+  equatable:
+    dependency: "direct main"
+    description:
+      name: equatable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   fake_async:
     dependency: transitive
     description:
@@ -188,6 +202,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_bloc:
+    dependency: "direct main"
+    description:
+      name: flutter_bloc
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.1"
   flutter_secure_storage:
     dependency: transitive
     description:
@@ -195,6 +216,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.3.3"
+  flutter_spinkit:
+    dependency: "direct main"
+    description:
+      name: flutter_spinkit
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -357,7 +385,7 @@ packages:
   oauth_http:
     dependency: "direct main"
     description:
-      path: "C:/oauth_http"
+      path: "C:/Projects/oauth_http"
       relative: false
     source: path
     version: "0.0.1"

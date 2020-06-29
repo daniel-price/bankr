@@ -21,7 +21,7 @@ dependencies:
     sdk: flutter
 
   oauth_http:
-    path: C:/oauth_http
+    path: C:/Projects/oauth_http
 
   http: ^0.12.0
   provider: ^4.0.5+1
@@ -30,6 +30,10 @@ dependencies:
   flutter_svg: ^0.17.4
   uuid: 2.0.4
   intl: ^0.16.1 #for formating dates
+  bloc: ^4.0.0
+  flutter_bloc: ^4.0.0
+  equatable: ^1.0.0
+  flutter_spinkit: ^2.1.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

@@ -1,23 +1,25 @@
+import 'package:bankr/blocs/simple_bloc_delegate.dart';
 import 'package:bankr/config/providers_factory.dart';
 import 'package:bankr/screen/home_screen.dart';
+import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:nested/nested.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+	WidgetsFlutterBinding.ensureInitialized();
+  BlocSupervisor.delegate = SimpleBlocDelegate();
   var providers = await factoryProviders();
-  runApp(MyApp(providers));
+	runApp(MyApp(providers));
 }
 
 class MyApp extends StatelessWidget {
-  final List<SingleChildWidget> providers;
+	final List<BlocProvider> providers;
 
-  MyApp(this.providers);
+	MyApp(this.providers);
 
-  @override
+	@override
 	Widget build(BuildContext context) {
-		return MultiProvider(
+		return MultiBlocProvider(
 			providers: providers,
 			child: MaterialApp(
 				title: 'Bankr',

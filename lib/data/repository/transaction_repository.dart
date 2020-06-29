@@ -1,27 +1,26 @@
 import 'dart:collection';
 
+import 'package:bankr/data/dao/i_dao.dart';
 import 'package:bankr/data/model/account.dart';
 import 'package:bankr/data/model/account_provider.dart';
 import 'package:bankr/data/model/account_transaction.dart';
-import 'package:bankr/data/repository/i_dao.dart';
 import 'package:intl/intl.dart';
 
-class TransactionsScreenController {
+class DateTransactionsInfoRepository {
   final IDao<AccountTransaction> accountTransactionDao;
   final IDao<Account> accountDao;
 	final IDao<AccountProvider> _accountProviderDao;
 
-	List<DateTransactionsRow> cachedDateTransactionRows;
+  List<DateTransactionsInfo> cachedDateTransactionRows;
 
-	TransactionsScreenController (this.accountTransactionDao, this.accountDao, this._accountProviderDao);
+  DateTransactionsInfoRepository(this.accountTransactionDao, this.accountDao, this._accountProviderDao);
 
-	invalidateCache ()
+  invalidateCache ()
 	{
 		cachedDateTransactionRows = null;
 	}
 
-	Future<List<DateTransactionsRow>> getAllAccountsTransactions ()
-	async {
+  Future<List<DateTransactionsInfo>> getAllAccountsTransactions() async {
 		if (cachedDateTransactionRows == null)
 		{
 			cachedDateTransactionRows = await generateDateTransactionRows();
@@ -29,23 +28,16 @@ class TransactionsScreenController {
 		return cachedDateTransactionRows;
 	}
 
-	void testMethod ()
-	async {
-		var dao = accountTransactionDao;
-		var allElements = await dao.getAll();
-		print(allElements.length);
-	}
-
-	Future<List<DateTransactionsRow>> generateDateTransactionRows ()
+  Future<List<DateTransactionsInfo>> generateDateTransactionRows ()
 	async {
     var accountTransactions = await accountTransactionDao.getAll();
-    var dateTransactionRowsbyDate = HashMap<DateTime, DateTransactionsRow>();
+    var dateTransactionRowsbyDate = HashMap<DateTime, DateTransactionsInfo>();
     for (AccountTransaction accountTransaction in accountTransactions) {
       var date = accountTransaction.date;
       var dateTransactionRow = dateTransactionRowsbyDate[date];
       if (dateTransactionRow == null)
       {
-	      dateTransactionRow = DateTransactionsRow(date);
+	      dateTransactionRow = DateTransactionsInfo(date);
 	      dateTransactionRowsbyDate[date] = dateTransactionRow;
       }
       var account = await accountDao.get(accountTransaction.uuidAccount);
@@ -59,13 +51,13 @@ class TransactionsScreenController {
   }
 }
 
-class DateTransactionsRow
-		implements Comparable<DateTransactionsRow>
+class DateTransactionsInfo
+		implements Comparable<DateTransactionsInfo>
 {
   final DateTime _date;
   final List<AccountTransactionRow> accountTransactions = List();
 
-  DateTransactionsRow (this._date);
+  DateTransactionsInfo (this._date);
 
   String get formattedDate {
     var formatter = new DateFormat('MMMEd');
@@ -80,7 +72,7 @@ class DateTransactionsRow
   }
 
   @override
-  int compareTo (DateTransactionsRow other)
+  int compareTo (DateTransactionsInfo other)
   {
     return other.date.compareTo(date);
   }
