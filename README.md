@@ -1,18 +1,11 @@
 # bankr
 
-A new Flutter project.
+A Dart/Flutter app for retrieving and viewing bank account information using the [TrueLayer API](https://truelayer.com/).
 
-## Getting Started
+## Getting started
 
-This project is a starting point for a Flutter application.
+To get started, clone the repository and replace the identifier and secret in Config.dart with your own information from [TrueLayer](https://truelayer.com/).
 
-A few resources to get you started if this is your first Flutter project:
+## Screenshot
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-=======
-# Bankr
+![screenshot](https://user-images.githubusercontent.com/64694785/86392959-347cd780-bc94-11ea-9926-9dff9d9be9e3.png)
