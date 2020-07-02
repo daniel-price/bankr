@@ -1,3 +1,4 @@
+import 'package:bankr/screen/accounts/account_info.dart';
 import 'package:bankr/screen/accounts/provider_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +32,7 @@ class ProviderCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
             ),
             subtitle: Text(
-              getLastUpdatedDesc(providerInfo),
+              providerInfo.lastUpdatedDesc,
               textScaleFactor: 0.9,
             ),
             trailing: Text(
@@ -49,13 +50,10 @@ class ProviderCard extends StatelessWidget {
   }
 }
 
-getLastUpdatedDesc(ProviderInfo providerRow) {
-  return providerRow.lastUpdatedDesc;
-}
 
-generateAccountRowWidgets(List<AccountRow> accountRows) {
+generateAccountRowWidgets(List<AccountInfo> accountRows) {
   var accountRowWidgets = List<Widget>();
-  for (AccountRow accountRow in accountRows) {
+  for (AccountInfo accountRow in accountRows) {
     var listTile = ListTile(
       title: Text(accountRow.accountName),
       trailing: Text(accountRow.accountBalanceDesc),

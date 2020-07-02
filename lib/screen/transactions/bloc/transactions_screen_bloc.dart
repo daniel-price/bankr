@@ -9,14 +9,14 @@ class TransactionsScreenBloc extends Bloc<TransactionsScreenEvent, TransactionsS
   TransactionsScreenBloc(this._dateTransactionsInfoRepository) : assert(_dateTransactionsInfoRepository != null);
 
   @override
-  TransactionsScreenState get initialState => StateLoading();
+  TransactionsScreenState get initialState => StateInitial();
 
   @override
   Stream<TransactionsScreenState> mapEventToState(TransactionsScreenEvent event) async* {
-    if (event is Loaded) {
-      yield StateLoading();
+    if (event is TransactionsScreenLoaded) {
+      yield StateInitial();
       var accountsTransactions = await _dateTransactionsInfoRepository.getAllAccountsTransactions();
-      yield StateLoaded(accountsTransactions);
+      yield StateSuccess(List.from(accountsTransactions));
     }
   }
 }

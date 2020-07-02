@@ -7,7 +7,8 @@ import 'package:bankr/data/download/data_retriever.dart';
 import 'package:bankr/data/download/data_saver.dart';
 import 'package:bankr/data/repository/account_repository.dart';
 import 'package:bankr/data/repository/transaction_repository.dart';
-import 'package:bankr/screen/accounts/bloc/accounts_panel_bloc.dart';
+import 'package:bankr/screen/accounts/bloc/accounts_screen_bloc.dart';
+import 'package:bankr/screen/accounts/bloc/download_bloc.dart';
 import 'package:bankr/screen/transactions/bloc/transactions_screen_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oauth_http/oauth_http.dart';
@@ -26,13 +27,18 @@ Future<List<BlocProvider>> factoryProviders() async {
 
   var accountRepository = ProviderInfoRepository(accountDao, accountBalanceDao, accountProviderDao, accountProviderUpdateAuditDao);
 
-  var accountsPanelBloc = AccountsPanelBloc(accountRepository, dataDownloader);
   var transactionsScreenBloc = TransactionsScreenBloc(dateTransactionsInfoRepository);
+  var accountsScreenBloc = AccountsScreenBloc(accountRepository, dataDownloader);
+  var downloadBloc = DownloadBloc(dataDownloader, transactionsScreenBloc, accountsScreenBloc);
 
   return [
-	  BlocProvider<AccountsPanelBloc>(
+	  BlocProvider<AccountsScreenBloc>(
 		  create: (context)
-		  => accountsPanelBloc,
+		  => accountsScreenBloc,
+	  ),
+	  BlocProvider<DownloadBloc>(
+		  create: (context)
+		  => downloadBloc,
 	  ),
 	  BlocProvider<TransactionsScreenBloc>(
 		  create: (context)
@@ -48,6 +54,18 @@ DataDownloader factoryDataDownloader(DataSaver dataSaver, OAuthHttp oAuthHttp) {
 }
 
 OAuthHttp factoryOAuthHttp() {
-  return OAuthHttp.factory(Configuration.AUTH_URL, Configuration.CALLBACK_URL_SCHEME, Configuration.CREATE_POST_URL, Configuration.IDENTIFIER, Configuration.SECRET,
-      Configuration.CALLBACK_URL_SCHEME + "://" + Configuration.CALLBACK_URL_HOST);
+	var identifier = Configuration.IDENTIFIER; //get by signing up on truelayer.com
+	var secret = Configuration.SECRET; //get by signing up on truelayer.com
+	var callbackUrlScheme = Configuration.CALLBACK_URL_SCHEME; //Also need to set this in AndroidManifest.xml
+	var callBackUrlHost = Configuration.CALLBACK_URL_HOST; //Also need to set this in AndroidManifest.xml
+
+	var createPostUrl = 'https://auth.truelayer.com/connect/token';
+	var redirectUrl = '$callbackUrlScheme://$callBackUrlHost';
+	var authUrl = 'https://auth.truelayer.com/?response_type=code'
+			'&client_id=$identifier'
+			'&scope=info%20accounts%20balance%20cards%20transactions%20direct_debits%20standing_orders%20offline_access'
+			'&redirect_uri=$redirectUrl'
+			'&providers=uk-ob-all%20uk-oauth-all';
+
+	return OAuthHttp.factory(authUrl, callbackUrlScheme, createPostUrl, identifier, secret, redirectUrl);
 }

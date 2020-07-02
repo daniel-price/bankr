@@ -35,7 +35,8 @@ class DataSaverSpy implements DataSaver {
   }
 
   @override
-  Future saveAudit(String uuidAccountProvider, bool success) {
+  saveAudit(String uuidAccountProvider, bool success) {
+
   }
 }
 

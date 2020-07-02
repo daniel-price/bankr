@@ -71,19 +71,10 @@ class TrueLayerApiAdapter extends IApiAdapter {
     String name = map['display_name'] as String;
     String currency = map['currency'] as String;
     Map<String, dynamic> accountNumber = map['account_number'] as Map<String, dynamic>;
-    String iban = accountNumber['iban'] as String;
-    if (iban == null) {
-      iban = ""; //todo sort out
-    }
+    String iban = accountNumber['iban'] as String ?? "";
     String swiftBic = accountNumber['swift_bic'] as String;
-    String number = accountNumber['number'] as String;
-    if (number == null) {
-      number = ""; //todo sort out
-    }
-    String sortCode = accountNumber['sort_code'] as String;
-    if (sortCode == null) {
-      sortCode = ""; //todo sort out
-    }
+    String number = accountNumber['number'] as String ?? "";
+    String sortCode = accountNumber['sort_code'] as String ?? "";
 
     return Account(
         updateTimestamp,
@@ -135,10 +126,10 @@ class TrueLayerApiAdapter extends IApiAdapter {
       return null;
     }
 
-    //TODO - change to assert
     if (results.length != 1)
     {
       print("expected 1 result but got ${results.length}");
+      return null;
     }
 
     Map<String, dynamic> result = results[0] as Map<String, dynamic>;
@@ -180,10 +171,10 @@ class TrueLayerApiAdapter extends IApiAdapter {
       return null;
     }
 
-    //TODO - change to assert
     if (results.length != 1)
     {
       print("expected 1 result but got ${results.length}");
+      return null;
     }
 
     Map<String, dynamic> result = results[0] as Map<String, dynamic>;

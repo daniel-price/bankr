@@ -25,7 +25,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         child: BlocBuilder<TransactionsScreenBloc, TransactionsScreenState>(
           bloc: BlocProvider.of(context),
           builder: (BuildContext context, TransactionsScreenState state) {
-            if (state is StateLoaded) {
+            if (state is StateSuccess) {
               var dateTransactionsInfos = state.dateTransactionsInfos;
               return ListView.builder(
                 itemCount: dateTransactionsInfos.length,
@@ -44,7 +44,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 },
               );
             }
-            BlocProvider.of<TransactionsScreenBloc>(context).add(Loaded());
+            BlocProvider.of<TransactionsScreenBloc>(context).add(TransactionsScreenLoaded());
             return Center(
               child: CircularProgressIndicator(),
             );

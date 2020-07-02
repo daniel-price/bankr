@@ -8,14 +8,14 @@ abstract class TransactionsScreenState extends Equatable {
   List<Object> get props => [];
 }
 
-class StateLoading extends TransactionsScreenState {}
+class StateInitial extends TransactionsScreenState {}
 
-class StateLoaded extends TransactionsScreenState {
+class StateSuccess extends TransactionsScreenState {
   final List<DateTransactionsInfo> _dateTransactionsInfos;
 
   List<DateTransactionsInfo> get dateTransactionsInfos => _dateTransactionsInfos;
 
-  StateLoaded(this._dateTransactionsInfos);
+  StateSuccess(this._dateTransactionsInfos);
 
   @override
   List<Object> get props => [_dateTransactionsInfos];

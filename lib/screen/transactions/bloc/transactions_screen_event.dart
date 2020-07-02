@@ -7,4 +7,4 @@ abstract class TransactionsScreenEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class Loaded extends TransactionsScreenEvent {}
+class TransactionsScreenLoaded extends TransactionsScreenEvent {}
